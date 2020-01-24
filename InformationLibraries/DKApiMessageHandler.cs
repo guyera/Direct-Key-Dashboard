@@ -20,8 +20,6 @@ namespace InformationLibraries
         public DKApiMessageHandler() {
             var username = Environment.GetEnvironmentVariable(EnvironmentVariableDKApiUsername);
             var password = Environment.GetEnvironmentVariable(EnvironmentVariableDKApiPassword);
-            Console.WriteLine($"Username: {username}");
-            Console.WriteLine($"Password: {password}");
             AuthHeaderValue = new AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
@@ -31,8 +29,6 @@ namespace InformationLibraries
             // Use client ssh certificate
             var certPath = Environment.GetEnvironmentVariable(EnvironmentVariableDKApiCertPath);
             var certPass = Environment.GetEnvironmentVariable(EnvironmentVariableDKApiCertPass);
-            Console.WriteLine($"Cert path: {certPath}");
-            Console.WriteLine($"Cert pass: {certPass}");
             var cert = new X509Certificate2(certPath, certPass);
             ClientCertificates.Add(cert);
         }

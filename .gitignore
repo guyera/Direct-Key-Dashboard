@@ -1,2 +1,5 @@
 bin/
 obj/
+.vs/slnx.sqlite
+.vs/Direct-Key-Dashboard/v16/.suo
+.vs/VSWorkspaceState.json

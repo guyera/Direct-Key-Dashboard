@@ -15,6 +15,15 @@ namespace InformationLibraries {
             Client = new DKApiClient(handler);
         }
 
+        public async Task<string> PullKeyDeviceActivity() {
+            const string path = "KeyDeviceActivity?tranDateStart=6%2F01%2F2019&takes=2000";
+            var response = await Client.GetAsync(path);
+        
+            Console.WriteLine("Status: " + Enum.GetName(typeof(HttpStatusCode), response.StatusCode));
+            
+            return await response.Content.ReadAsStringAsync();
+        }
+
         public async Task<string> PullNewest()
         {
             // NOTE: In order for the BaseAddress of the Client to work,

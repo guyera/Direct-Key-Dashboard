@@ -1,0 +1,10 @@
+﻿@model DirectKeyDashboard.Views.Home.ApiTestViewModel
+
+@{
+    ViewData["Title"] = "Api Test";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Html.Raw(Model.Online ? "Successfully connected to API" : "Failed to connect to API")</h1>
+    <p>@Model.Response</p>
+</div>

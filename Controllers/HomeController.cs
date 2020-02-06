@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DirectKeyDashboard.Models;
+using InformationLibraries;
+using System.Threading.Tasks;
+using DirectKeyDashboard.Views.Home;
 
 namespace DirectKeyDashboard.Controllers
 {
@@ -14,8 +17,14 @@ namespace DirectKeyDashboard.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> ApiTest(DKApiAccess apiAccess)
         {
+            var online = await apiAccess.IsResponding();
+            var responseString = await apiAccess.PullNewest();
+            return View(new ApiTestViewModel(online, responseString));
+        }
+
+        public IActionResult Index() {
             return View();
         }
 

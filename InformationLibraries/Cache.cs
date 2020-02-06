@@ -1,7 +1,6 @@
 using System;
-using QueryAPI;
 
-namespace RedCache
+namespace InformationLibraries
 {
     public class Storage 
     { 

@@ -1,0 +1,39 @@
+@model DirectKeyDashboard.Charting.Domain.GroupedBarChart
+
+@{
+    var id = Guid.NewGuid().ToString();
+    var jsId = id.Replace("-", "");
+    var canvasId = $"grouped-bar-chart-canvas-{id}";
+    var labelsGlobal = $"groupedBarLabels_{jsId}";
+    var groupLabelsGlobal = $"groupedBarGroupLabels_{jsId}";
+    var valuesGlobal = $"groupedBarValues_{jsId}";
+    var backgroundColorsGlobal = $"groupedBarBackgroundColors_{jsId}";
+    var borderColorsGlobal = $"groupedBarBorderColors_{jsId}";
+}
+
+<div class="chart-container" style="position:relative; width:60vw; margin-left:auto; margin-right:auto">
+    <canvas id="@(Html.Raw(canvasId))"></canvas>
+</div>
+
+@*Inject CS variables as JSON strings, then parse into JS objects*@
+
+<script type="text/javascript">
+    if (window['groupedBarChartScriptIds'] == null) {
+        window['groupedBarChartScriptIds'] = [];
+    }
+    window['groupedBarChartScriptIds'].push('@Html.Raw(id)');
+    @(Html.Raw(labelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Labels.ToList()))');
+    @(Html.Raw(groupLabelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BarGroups.Select(b => b.Label).ToList()))');
+    @(Html.Raw(valuesGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BarGroups.SelectMany(b => b.Values).ToList()))');
+    @(Html.Raw(backgroundColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BarGroups.Select(b => b.BackgroundColor).ToList()))');
+    @(Html.Raw(borderColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.BarGroups.Select(b => b.BorderColor).ToList()))');
+</script>
+
+<script defer src="~/js/grouped-bar-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasId)"
+                                                  data-bar-border-width="1"
+                                                  data-num-groups="3"
+                                                  data-group-labels-global="@Html.Raw(groupLabelsGlobal)"
+                                                  data-labels-global="@Html.Raw(labelsGlobal)"
+                                                  data-values-global="@Html.Raw(valuesGlobal)"
+                                                  data-background-colors-global="@Html.Raw(backgroundColorsGlobal)"
+                                                  data-border-colors-global="@Html.Raw(borderColorsGlobal)"></script>

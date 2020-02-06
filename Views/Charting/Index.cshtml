@@ -1,0 +1,17 @@
+﻿@using DirectKeyDashboard.Views.Charting
+
+@{
+    ViewData["Title"] = "Charting Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
+        @*
+        @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
+        @await Component.InvokeAsync(typeof(OperationCountsViewComponent))
+        *@
+        @await Component.InvokeAsync(typeof(OperationTimingsViewComponent))
+    </div>
+</div>

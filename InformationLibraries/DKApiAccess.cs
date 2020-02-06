@@ -36,9 +36,6 @@ namespace InformationLibraries {
             const string path = "Organization";
             var response = await Client.GetAsync(path);
             
-        
-            Console.WriteLine("Status: " + Enum.GetName(typeof(HttpStatusCode), response.StatusCode));
-            
             return await response.Content.ReadAsStringAsync();
         }
 

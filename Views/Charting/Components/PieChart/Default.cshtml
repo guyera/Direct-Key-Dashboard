@@ -1,11 +1,13 @@
 @model DirectKeyDashboard.Charting.Domain.PieChart
 
 @{
-    var canvasID = "test-chart-canvas";
-    var labelsGlobal = "sliceLabels";
-    var countsGlobal = "sliceCounts";
-    var backgroundColorsGlobal = "sliceBackgroundColors";
-    var borderColorsGlobal = "sliceBorderColors";
+    var id = Guid.NewGuid().ToString();
+    var jsId = id.Replace("-", "");
+    var canvasID = $"pie-chart-canvas-{id}";
+    var labelsGlobal = $"sliceLabels_{jsId}";
+    var countsGlobal = $"sliceValues_{jsId}";
+    var backgroundColorsGlobal = $"sliceBackgroundColors_{jsId}";
+    var borderColorsGlobal = $"sliceBorderColors_{jsId}";
 }
 
 <div class="chart-container" style="position:relative; width:60vw; margin-left:auto; margin-right:auto">
@@ -15,13 +17,17 @@
 @*Inject CS variables as JSON strings, then parse into JS objects*@
 
 <script type="text/javascript">
+    if (window['pieChartScriptIds'] == null) {
+        window['pieChartScriptIds'] = [];
+    }
+    window['pieChartScriptIds'].push('@Html.Raw(id)');
     @(Html.Raw(labelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Label).ToList()))');
     @(Html.Raw(countsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Count).ToList()))');
     @(Html.Raw(backgroundColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BackgroundColor).ToList()))');
     @(Html.Raw(borderColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BorderColor).ToList()))');
 </script>
 
-<script defer src="~/js/pie-chart.js" data-canvas-id="@Html.Raw(canvasID)"
+<script defer src="~/js/pie-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasID)"
                                                   data-chart-label="@Html.Raw(Model.Label)"
                                                   data-slice-border-width="1"
                                                   data-labels-global="@Html.Raw(labelsGlobal)"

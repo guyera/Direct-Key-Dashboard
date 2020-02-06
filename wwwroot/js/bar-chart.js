@@ -6,8 +6,15 @@
 // If properly deferred, this script should have access to all dependencies,
 // including ChartJS, JQuery, and Bootstrap
 
-// Receive script attribute containing canvas ID passed from view component
-script = $('script[src="/js/bar-chart.js"]'); // Find script tag importing this file
+// Receive script attribute for data passed in from razor page.
+// We could use document.currentScript, but it doesn't have great
+// browser support, so instead we use a global array as a
+// queue in which we push() script IDs in the razor page and then shift()
+// them out in the same order. Deferred scripts maintain their relative order,
+// so a script will not accidentally take the information intended for another
+// script.
+var scriptId = window["barChartScriptIds"].shift();
+var script = $('script[id="' + scriptId + '"]'); // Find script tag associated with this bar chart
 var canvasID = script.attr('data-canvas-id'); // Get canvas ID attribute
 var ctx = $('#' + canvasID); // Get chart context
 

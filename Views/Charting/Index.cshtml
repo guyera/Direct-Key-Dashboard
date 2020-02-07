@@ -5,13 +5,23 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        @*
+        <h3>Operation Instances</h3>
+        <h4>Proportion of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
+        <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationCountsViewComponent))
-        *@
+
+        <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
+        <h4>Comparison of Duration Types</h4>
         @await Component.InvokeAsync(typeof(OperationTimingsViewComponent))
+        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
+        @await Component.InvokeAsync(typeof(OperationTimingsPivotedViewComponent))
+
+        <h3 style="margin-top: 50px">Quick Connect Operation Times</h3>
+        <h4>Comparison of Duration Types</h4>
+        @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsViewComponent))
+        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
+        @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsPivotedViewComponent))
     </div>
 </div>

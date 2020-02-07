@@ -10,10 +10,10 @@ using Util;
 namespace DirectKeyDashboard.Views.Charting
 {
     // Displays various operation class average timings in a bar chart
-    public class OperationTimingsViewComponent : GroupedBarChartViewComponent {
+    public class QuickConnectOperationTimingsViewComponent : GroupedBarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
-        public OperationTimingsViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
+        public QuickConnectOperationTimingsViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
         protected override async Task<GroupedBarChart> ProjectChart() {
             // Eventually, attempt to pull the bar chart
@@ -26,18 +26,18 @@ namespace DirectKeyDashboard.Views.Charting
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
-            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs == 0).GroupBy(m => m.OperationCode);
-            var averageCommTimes = new Dictionary<string, int>(
+            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0).GroupBy(m => m.OperationCode);
+            var averageUserIntentTimes = new Dictionary<string, int>(
                 groups.Select(
                     g => new KeyValuePair<string, int>(
                         g.First().OperationCode,
-                        (int) g.Select(d => d.OperationCommDurationMs).Average())).ToList());
-            var averageConnectTimes = new Dictionary<string, int>(
-                groups.Select(
-                    g => new KeyValuePair<string, int>(
-                        g.First().OperationCode,
-                        (int) g.Select(d => d.OperationConnectDurationMs).Average())).ToList());
+                        (int) g.Select(d => d.OperationUserIntentDurationMs).Average())).ToList());
             var averageTotalTimes = new Dictionary<string, int>(
+                groups.Select(
+                    g => new KeyValuePair<string, int>(
+                        g.First().OperationCode,
+                        (int) g.Select(d => d.OperationTotalDurationMs).Average())).ToList());
+            var averageTimes = new Dictionary<string, int>(
                 groups.Select(
                     g => new KeyValuePair<string, int>(
                         g.First().OperationCode,
@@ -45,15 +45,15 @@ namespace DirectKeyDashboard.Views.Charting
 
             // Flatten dictionaries to just integer values, making sure each
             // list of integer values has the same sub-ordering of operation codes
-            var commTimeKvps = averageCommTimes.ToList();
-            var orderedCommTimes = commTimeKvps.Select(kvp => kvp.Value).ToList();
-            var orderedConnectTimes = new List<int>();
-            foreach (var kvp in commTimeKvps) {
-                orderedConnectTimes.Add(averageConnectTimes[kvp.Key]);
-            }
+            var userIntentTimeKvps = averageUserIntentTimes.ToList();
+            var orderedUserIntentTimes = userIntentTimeKvps.Select(kvp => kvp.Value).ToList();
             var orderedTotalTimes = new List<int>();
-            foreach (var kvp in commTimeKvps) {
+            foreach (var kvp in userIntentTimeKvps) {
                 orderedTotalTimes.Add(averageTotalTimes[kvp.Key]);
+            }
+            var orderedTimes = new List<int>();
+            foreach (var kvp in userIntentTimeKvps) {
+                orderedTimes.Add(averageTimes[kvp.Key]);
             }
 
             // The exact sub-ordering doesn't matter, so long as it's consistent
@@ -68,7 +68,7 @@ namespace DirectKeyDashboard.Views.Charting
             
             // Make sure the order of labels matches the sub-order of values as well
             var labels = new List<string>();
-            foreach (var kvp in commTimeKvps) {
+            foreach (var kvp in userIntentTimeKvps) {
                 labels.Add(labelsDict[kvp.Key]);
             }
             
@@ -103,8 +103,8 @@ namespace DirectKeyDashboard.Views.Charting
             // must be consistent throughout the entire chart projection.
             // Else the groups will be mislabeled.
             var groupLabels = new List<string>(){
-                EnumHelper<ApiDataSubModel>.GetPropertyDisplayName(nameof(ApiDataSubModel.OperationCommDurationMs)),
-                EnumHelper<ApiDataSubModel>.GetPropertyDisplayName(nameof(ApiDataSubModel.OperationConnectDurationMs)),
+                EnumHelper<ApiDataSubModel>.GetPropertyDisplayName(nameof(ApiDataSubModel.OperationUserIntentDurationMs)),
+                EnumHelper<ApiDataSubModel>.GetPropertyDisplayName(nameof(ApiDataSubModel.OperationTotalDurationMs)),
                 EnumHelper<ApiDataSubModel>.GetPropertyDisplayName(nameof(ApiDataSubModel.OperationDurationMs))
             };
 
@@ -114,19 +114,19 @@ namespace DirectKeyDashboard.Views.Charting
                     Label = groupLabels[0],
                     BackgroundColor = backgroundColors[0],
                     BorderColor = borderColors[0],
-                    Values = orderedCommTimes
+                    Values = orderedUserIntentTimes
                 },
                 new BarGroup(){
                     Label = groupLabels[1],
                     BackgroundColor = backgroundColors[1],
                     BorderColor = borderColors[1],
-                    Values = orderedConnectTimes
+                    Values = orderedTotalTimes
                 },
                 new BarGroup(){
                     Label = groupLabels[2],
                     BackgroundColor = backgroundColors[2],
                     BorderColor = borderColors[2],
-                    Values = orderedTotalTimes
+                    Values = orderedTimes
                 }
             };
 
@@ -144,12 +144,10 @@ namespace DirectKeyDashboard.Views.Charting
         private class ApiDataSubModel {
             public string OperationCode {get; set;}
             public string OperationDescription {get; set;}
+            [DisplayName("User Intent Duration (MS)")]
             public int OperationUserIntentDurationMs {get; set;}
-
-            [DisplayName("Comm Duration (MS)")]
-            public int OperationCommDurationMs {get; set;}
-            [DisplayName("Connect Duration (MS)")]
-            public int OperationConnectDurationMs {get; set;}
+            [DisplayName("Total Duration (MS)")]
+            public int OperationTotalDurationMs {get; set;}
             [DisplayName("Duration (MS)")]
             public int OperationDurationMs {get; set;}
         }

@@ -24,8 +24,9 @@ namespace DirectKeyDashboard.Views.Charting
             string rawData = await apiAccess.PullKeyDeviceActivity();
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
-            var groups = apiDataModel.Data.GroupBy(m => m.OperationCode);
+            var groups = apiDataModel.Data.GroupBy(m => m.OperationCode).OrderByDescending(g => g.Count());
             var counts = groups.Select(g => g.Count());
             // Entities are grouped by operation codes which correspond one-to-one
             // with operation descriptions, so they're also grouped by descriptions

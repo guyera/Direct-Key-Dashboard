@@ -25,6 +25,7 @@ namespace DirectKeyDashboard.Views.Charting
             string rawData = await apiAccess.PullKeyDeviceActivity();
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
             var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0).GroupBy(m => m.OperationCode);
             var averageUserIntentTimes = new Dictionary<string, int>(
@@ -124,11 +125,11 @@ namespace DirectKeyDashboard.Views.Charting
             public string OperationCode {get; set;}
             public string OperationDescription {get; set;}
             [DisplayName("User Intent Duration (MS)")]
-            public int OperationUserIntentDurationMs {get; set;}
+            public int? OperationUserIntentDurationMs {get; set;}
             [DisplayName("Total Duration (MS)")]
-            public int OperationTotalDurationMs {get; set;}
+            public int? OperationTotalDurationMs {get; set;}
             [DisplayName("Duration (MS)")]
-            public int OperationDurationMs {get; set;}
+            public int? OperationDurationMs {get; set;}
         }
     }
 }

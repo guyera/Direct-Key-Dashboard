@@ -29,14 +29,5 @@ namespace DirectKeyDashboard.Views.Charting
             var pieChart = await ProjectChart();
             return await Task.Run(() => View(pieChart));
         }
-
-        private class ApiDataModel {
-            public List<ApiDataSubModel> Data {get; set;}
-        }
-
-        private class ApiDataSubModel {
-            public string OperationCode {get; set;}
-            public string OperationDescription {get; set;}
-        }
     }
 }

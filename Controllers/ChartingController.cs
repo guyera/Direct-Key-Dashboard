@@ -2,20 +2,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DirectKeyDashboard.Models;
+using InformationLibraries;
+using System.Threading.Tasks;
+using DirectKeyDashboard.Views.Charting;
 
 namespace DirectKeyDashboard.Controllers
 {
-    public class HomeController : Controller
+    public class ChartingController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<ChartingController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public ChartingController(ILogger<ChartingController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Index()
-        {
+        public IActionResult Index() {
             return View();
         }
 

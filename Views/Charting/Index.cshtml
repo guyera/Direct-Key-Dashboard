@@ -20,6 +20,10 @@
             projection = new SimpleProjection("OperationDurationMs")
         })
 
+        @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
+
+        @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
+
         @*
         
         <h3>Operation Instances</h3>

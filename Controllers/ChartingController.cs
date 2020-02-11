@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DirectKeyDashboard.Models;
-using InformationLibraries;
-using System.Threading.Tasks;
-using DirectKeyDashboard.Views.Charting;
 
 namespace DirectKeyDashboard.Controllers
 {

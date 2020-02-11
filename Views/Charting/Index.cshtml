@@ -11,12 +11,12 @@
         @await Component.InvokeAsync(typeof(ApiLineChartViewComponent), new {
             summary = new AverageSummary(),
             filter = new Filter(new List<Criterion>()),
-            timeFilters = new List<TimeFilter>() {
-                new TimeFilter("June", "TransDate", DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
-                new TimeFilter("July", "TransDate", DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
-                new TimeFilter("August", "TransDate", DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
-                new TimeFilter("September", "TransDate", DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture))
-            },
+            timeSeries = new TimeSeries(new List<TimeInterval>() {
+                    new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                    new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                    new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                    new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+            }),
             projection = new SimpleProjection("OperationDurationMs")
         })
 

@@ -28,9 +28,8 @@ namespace DirectKeyDashboard.Views.Charting
         protected virtual async Task<LineChart> ProjectChart(LineChartContext ctx) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
-            foreach (var filter in ctx.TimeFilters) {
-                var criterion = filter.GetTimeIntervalCriterion();
-                var rawData = await apiAccess.PullKeyDeviceActivity(criterion.Start, criterion.End);
+            foreach (var interval in ctx.TimeSeries.TimeIntervals) {
+                var rawData = await apiAccess.PullKeyDeviceActivity(interval.Start, interval.End);
                 // Parse string to JObject
                 var rootObject = JObject.Parse(rawData);
                 if (!rootObject.TryGetValue("Data", out var dataArrayToken)) {
@@ -42,11 +41,9 @@ namespace DirectKeyDashboard.Views.Charting
                 var dataArray = dataArrayToken.AsJEnumerable();
                 dataArray = ctx.Filter.FilterData(dataArray);
 
-                // Filter dataArray by time interval TODO remove this part, as stated
-                var timedDataArray = filter.FilterData(dataArray);
                 // Project each token to a value
                 var projectedData = new Collection<float>();
-                foreach (var token in timedDataArray) {
+                foreach (var token in dataArray) {
                     if (token.Type != JTokenType.Object) {
                         throw new JsonArgumentException();
                     }
@@ -72,24 +69,24 @@ namespace DirectKeyDashboard.Views.Charting
                         PointColor = "hsla(0, 100%, 50%, 0.3)"
                     }
                 },
-                CategoryLabels = ctx.TimeFilters.Select(f => f.Name).ToList()
+                CategoryLabels = ctx.TimeSeries.TimeIntervals.Select(f => f.Name).ToList()
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<float> summary, Filter filter, IList<TimeFilter> timeFilters, Projection projection) {
-            var lineChart = await ProjectChart(new LineChartContext(summary, filter, timeFilters, projection));
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<float> summary, Filter filter, TimeSeries timeSeries, Projection projection) {
+            var lineChart = await ProjectChart(new LineChartContext(summary, filter, timeSeries, projection));
             return await Task.Run(() => View(lineChart));
         }
 
         protected class LineChartContext {
             public Summary<float> Summary {get;}
             public Filter Filter {get;}
-            public IList<TimeFilter> TimeFilters {get;}
+            public TimeSeries TimeSeries {get;}
             public Projection Projection {get;}
-            public LineChartContext(Summary<float> summary, Filter filter, IList<TimeFilter> timeFilters, Projection projection) {
+            public LineChartContext(Summary<float> summary, Filter filter, TimeSeries timeSeries, Projection projection) {
                 Summary = summary;
                 Filter = filter;
-                TimeFilters = timeFilters;
+                TimeSeries = timeSeries;
                 Projection = projection;
             }
         }

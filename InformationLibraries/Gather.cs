@@ -1,4 +1,5 @@
-﻿// this is the library to grab data from the API
+﻿/*
+// this is the library to grab data from the API
 using System;
 using System.Net;
 using System.IO;
@@ -11,16 +12,15 @@ using System.Security.Cryptography.X509Certificates;
  * username = 
  * password = 
  */
-
+ /*
 namespace CachingSystem
 {
     public class Gather
     {
-		// Changing these to environmental variables to exclude from file as literal.
         private const string url = "https://dkintapi.keytest.net";
-        private const string certpath = @"C:\";
-        private const string certpass = "";
-        private const string auth = "";
+        private const string certpath = @"C:\Users\TEST\Documents\Cert\CGuillory@dkintapi.keytest.net.pfx";
+        private const string certpass = "egF3wO9h2F-YPZK";
+        private const string auth = "Basic Q0d1aWxsb3J5OjU2Q25OOC0/N2F0LlxEdg==";
         // pull the newest entry possible
         public static string PullNewest()
         {
@@ -87,3 +87,4 @@ namespace CachingSystem
         }
     }
 }
+******/

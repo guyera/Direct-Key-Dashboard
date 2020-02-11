@@ -1,4 +1,6 @@
 ﻿@using DirectKeyDashboard.Views.Charting
+@using DirectKeyDashboard.Charting.Domain
+@using System.Globalization
 
 @{
     ViewData["Title"] = "Charting Page";
@@ -6,6 +8,20 @@
 
 <div class="text-center">
     <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
+        @await Component.InvokeAsync(typeof(ApiLineChartViewComponent), new {
+            summary = new AverageSummary(),
+            filter = new Filter(new List<Criterion>()),
+            timeFilters = new List<TimeFilter>() {
+                new TimeFilter("June", "TransDate", DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                new TimeFilter("July", "TransDate", DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                new TimeFilter("August", "TransDate", DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                new TimeFilter("September", "TransDate", DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture))
+            },
+            projection = new SimpleProjection("OperationDurationMs")
+        })
+
+        @*
+        
         <h3>Operation Instances</h3>
         <h4>Proportion of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
@@ -23,5 +39,7 @@
         @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsViewComponent))
         <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
         @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsPivotedViewComponent))
+
+        *@
     </div>
 </div>

@@ -2,6 +2,7 @@
 // ViewComponent
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
     public class GroupedBarChart {

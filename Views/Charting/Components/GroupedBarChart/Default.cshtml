@@ -31,7 +31,7 @@
 
 <script defer src="~/js/grouped-bar-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasId)"
                                                   data-bar-border-width="1"
-                                                  data-num-groups="3"
+                                                  data-num-groups="@Html.Raw(Model.BarGroups.Count())"
                                                   data-group-labels-global="@Html.Raw(groupLabelsGlobal)"
                                                   data-labels-global="@Html.Raw(labelsGlobal)"
                                                   data-values-global="@Html.Raw(valuesGlobal)"

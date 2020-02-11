@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,8 +19,13 @@ namespace InformationLibraries {
             Client = new DKApiClient(handler);
         }
 
+        // Just for testing purposes
         public async Task<string> PullKeyDeviceActivity() {
-            const string path = "KeyDeviceActivity?tranDateStart=6%2F01%2F2019&takes=2000";
+            return await PullKeyDeviceActivity(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture));
+        }
+
+        public async Task<string> PullKeyDeviceActivity(DateTime entryDateStart, DateTime entryDateEnd) {
+            string path = $"KeyDeviceActivity?entryDateStart={entryDateStart.Month}%2F{entryDateStart.Day}%2F{entryDateStart.Year}&entryDateEnd={entryDateEnd.Month}%2F{entryDateEnd.Day}%2F{entryDateEnd.Year}&takes=2000";
             var response = await Client.GetAsync(path);
         
             Console.WriteLine("Status: " + Enum.GetName(typeof(HttpStatusCode), response.StatusCode));

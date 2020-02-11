@@ -2,6 +2,9 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
+// using System.Globalization;
+
+
 namespace InformationLibraries {
     // DKApiAccess is an injected singleton wrapped around
     // a DKApiClient used to communicate with the API.
@@ -33,17 +36,39 @@ namespace InformationLibraries {
 
             // The following is correct:        path = 'Organization'
             // The following is NOT correct:    path = '/Organization'
-            const string path = "Organization";
-            var response = await Client.GetAsync(path);
-            
+
+
+            // Grabs the current date minus one month and spits out a string that is usable for the API
+            const string path = "KeyDeviceActivity?tranDateStart=";
+
+            // If you want to check the date in the console uncomment the code below and uncomment the globalization library
+            /*
+              CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+              DateTimeFormatInfo dateTimeFormatInfo = culture.DateTimeFormat;
+              dateTimeFormatInfo.DateSeparator = ":";
+            */
+            DateTime oneMonthAgo = (DateTime.Now).AddMonths(-1);
+
+            var response = await Client.GetAsync(path+oneMonthAgo+"&takes=1");
             return await response.Content.ReadAsStringAsync();
         }
 
         // pull the oldest entry possible TODO <config oldest date setup>
         public async Task<string> PullOldest()
         {
+            const string path = "KeyDeviceActivity?tranDateStart=";
+
+            // If you want to check the date in the console uncomment the code below and uncomment the globalization library
+            /*
+              CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+              DateTimeFormatInfo dateTimeFormatInfo = culture.DateTimeFormat;
+              dateTimeFormatInfo.DateSeparator = ":";
+            */
+            DateTime startTime = (DateTime.Now).AddDays(-32);
+            DateTime endTime = (DateTime.Now).AddDays(-31);
+            var response = await Client.GetAsync(path + startTime + $"&tranDateEnd={endTime}&takes=1");
             // This might need some configuring from the config file.
-            return await Task.Run(() => (string) null);
+            return await response.Content.ReadAsStringAsync();
         }
 
         // tests to see if it is responsive (Needs work)
@@ -54,7 +79,6 @@ namespace InformationLibraries {
             var response = await Client.GetAsync(path);
 
             if (response.StatusCode == HttpStatusCode.OK) {
-                Console.WriteLine("API: I'm online!!!");
                 return true;
             }
             
@@ -64,10 +88,27 @@ namespace InformationLibraries {
         }
 
         // pull more entries based on input
-        public async Task<string> PullMore(int amount, string queryText, string timeStart, string timeEnd)
+        // TODO more dummy proofing
+        public async Task<string> PullMore(int amount, string queryText, string parameters, DateTime timeStart, DateTime timeEnd)
         {
+            string startpath = $"{queryText}?{parameters}";
+            if (timeStart == null || timeEnd == null)
+            {
+                var otherresponse = await Client.GetAsync(startpath + $"&takes={amount}");
+                return await otherresponse.Content.ReadAsStringAsync();
+            }
+            startpath += "tranDateStart=";
+            string endpath = "&tranDateEnd=";
+            // If you want to check the date in the console uncomment the code below and uncomment the globalization library
+            /*
+              CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+              DateTimeFormatInfo dateTimeFormatInfo = culture.DateTimeFormat;
+              dateTimeFormatInfo.DateSeparator = ":";
+            */
+
+            var response = await Client.GetAsync(startpath + timeStart + endpath + timeEnd + $"&takes={amount}");
             // pull this many entries with this specific query from time this to this
-            return await Task.Run(() => (string) null);
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

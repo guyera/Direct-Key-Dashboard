@@ -25,12 +25,8 @@ namespace InformationLibraries {
         }
 
         public async Task<string> PullKeyDeviceActivity(DateTime entryDateStart, DateTime entryDateEnd) {
-            string path = $"KeyDeviceActivity?entryDateStart={entryDateStart.Month}%2F{entryDateStart.Day}%2F{entryDateStart.Year}&entryDateEnd={entryDateEnd.Month}%2F{entryDateEnd.Day}%2F{entryDateEnd.Year}&takes=2000";
-            var response = await Client.GetAsync(path);
-        
-            Console.WriteLine("Status: " + Enum.GetName(typeof(HttpStatusCode), response.StatusCode));
-            
-            return await response.Content.ReadAsStringAsync();
+            const string path = "KeyDeviceActivity";
+            return await PullMore(2000, path, string.Empty, entryDateStart, entryDateEnd);
         }
 
         public async Task<string> PullNewest()

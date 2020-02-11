@@ -53,7 +53,6 @@ namespace DirectKeyDashboard.Views.Charting
                 }
 
                 // Summarize the data and add it to the dataset
-                Console.WriteLine($"Num data: {projectedData.Count()}");
                 if (projectedData.Any()) {
                     var datum = ctx.Summary.Summarize(projectedData);
                     vertices.Add(new Vertex(datum));

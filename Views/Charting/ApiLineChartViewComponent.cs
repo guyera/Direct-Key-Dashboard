@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,12 +6,6 @@ using DirectKeyDashboard.Charting.Domain;
 using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-
-//TODO Stop storing time intervals as filters and criterion. Instead,
-//TODO filter simply using the REST api filters, since that's the
-//TODO easiest way to ensure that data is retrieved from each interval.
-//TODO Using a single overarching interval with takes=2000 may only take
-//TODO from the first few days, depending on the data distribution.
 
 namespace DirectKeyDashboard.Views.Charting
 {

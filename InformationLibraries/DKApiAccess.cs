@@ -91,12 +91,12 @@ namespace InformationLibraries {
 
         // pull more entries based on input
         // TODO more dummy proofing
-        public async Task<string> PullMore(int amount, string queryText, string parameters, DateTime timeStart, DateTime timeEnd)
+        public async Task<string> PullMore(int amount, string queryText, string parameters, DateTime? timeStart, DateTime? timeEnd)
         {
             string startpath = $"{queryText}?{parameters}";
             if (timeStart == null || timeEnd == null)
             {
-                var otherresponse = await Client.GetAsync(startpath + $"&takes={amount}");
+                var otherresponse = await Client.GetAsync(startpath + $"{(string.IsNullOrEmpty(parameters) ? "" : "&")}takes={amount}");
                 return await otherresponse.Content.ReadAsStringAsync();
             }
             startpath += "tranDateStart=";

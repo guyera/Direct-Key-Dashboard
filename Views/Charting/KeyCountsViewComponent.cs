@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,10 +9,10 @@ using Newtonsoft.Json;
 namespace DirectKeyDashboard.Views.Charting
 {
     // Displays operation class counts in a bar chart
-    public class OperationCountsViewComponent : BarChartViewComponent {
+    public class KeyCountsViewComponent : BarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
-        public OperationCountsViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
+        public KeyCountsViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
         protected override async Task<BarChart> ProjectChart() {
             // Eventually, attempt to pull the bar chart
@@ -20,19 +21,19 @@ namespace DirectKeyDashboard.Views.Charting
             // the bar chart reprojected on, for example,
             // page refresh. For now, pull the data every
             // time.
-            string rawData = await apiAccess.PullKeyDeviceActivity();
+            string rawData = await apiAccess.PullMore(2000, "Key", string.Empty, null, null);
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
-            var groups = apiDataModel.Data.GroupBy(m => m.OperationCode).OrderByDescending(g => g.Count());
+            var groups = apiDataModel.Data.GroupBy(m => m.OwnerId).OrderByDescending(g => g.Count()).Where(g => g.First().OwnerId != 21);
             
             // Select LINQ preserves order absolutely (each element and its transformation have the
             // same indices in their respective enumerables). So we can just select and zip. 
             var values = groups.Select(g => g.Count());
             // Entities are grouped by operation codes which correspond one-to-one
             // with operation descriptions, so they're also grouped by descriptions
-            var labels = groups.Select(g => g.First().OperationDescription);
+            var labels = groups.Select(g => g.First().OwnerId);
             
             // Generate bar chart colors using a linearly distributed hue, all with
             // the same saturation, lightness, and transparency
@@ -59,7 +60,7 @@ namespace DirectKeyDashboard.Views.Charting
             var bars = values.Zip(labels.Zip(backgroundColors.Zip(borderColors)))
                                .Select(tuple => new Bar{
                                    Value = tuple.First,
-                                   Label = tuple.Second.First,
+                                   Label = tuple.Second.First.ToString(),
                                    BackgroundColor = tuple.Second.Second.First,
                                    BorderColor = tuple.Second.Second.Second
                                });
@@ -67,7 +68,7 @@ namespace DirectKeyDashboard.Views.Charting
             // Lastly, we just have to return the bar chart
             return new BarChart {
                 Bars = bars.ToList(),
-                Label = "Number of Operations"
+                Label = "Number of Keys by Owner ID"
             };
         }
 
@@ -76,8 +77,7 @@ namespace DirectKeyDashboard.Views.Charting
         }
 
         private class ApiDataSubModel {
-            public string OperationCode {get; set;}
-            public string OperationDescription {get; set;}
+            public int OwnerId {get; set;}
         }
     }
 }

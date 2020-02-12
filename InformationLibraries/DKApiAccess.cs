@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,13 +19,14 @@ namespace InformationLibraries {
             Client = new DKApiClient(handler);
         }
 
+        // Just for testing purposes
         public async Task<string> PullKeyDeviceActivity() {
-            const string path = "KeyDeviceActivity?tranDateStart=6%2F01%2F2019&takes=2000";
-            var response = await Client.GetAsync(path);
-        
-            Console.WriteLine("Status: " + Enum.GetName(typeof(HttpStatusCode), response.StatusCode));
-            
-            return await response.Content.ReadAsStringAsync();
+            return await PullKeyDeviceActivity(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture));
+        }
+
+        public async Task<string> PullKeyDeviceActivity(DateTime entryDateStart, DateTime entryDateEnd) {
+            const string path = "KeyDeviceActivity";
+            return await PullMore(2000, path, string.Empty, entryDateStart, entryDateEnd);
         }
 
         public async Task<string> PullNewest()
@@ -89,12 +91,12 @@ namespace InformationLibraries {
 
         // pull more entries based on input
         // TODO more dummy proofing
-        public async Task<string> PullMore(int amount, string queryText, string parameters, DateTime timeStart, DateTime timeEnd)
+        public async Task<string> PullMore(int amount, string queryText, string parameters, DateTime? timeStart, DateTime? timeEnd)
         {
             string startpath = $"{queryText}?{parameters}";
             if (timeStart == null || timeEnd == null)
             {
-                var otherresponse = await Client.GetAsync(startpath + $"&takes={amount}");
+                var otherresponse = await Client.GetAsync(startpath + $"{(string.IsNullOrEmpty(parameters) ? "" : "&")}takes={amount}");
                 return await otherresponse.Content.ReadAsStringAsync();
             }
             startpath += "tranDateStart=";

@@ -1,7 +1,7 @@
 using Newtonsoft.Json.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
-    public abstract class Projection {
-        public abstract float Project(JObject jsonObject);
+    public abstract class Projection<T> {
+        public abstract T Project(JObject jsonObject);
     }
 }

@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using DirectKeyDashboard.Charting.Domain;
+using InformationLibraries;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+
+namespace DirectKeyDashboard.Views.Charting
+{
+    // Represents a bar chart which projects data from the API.
+    // The data is filtered by the Filter model supplied,
+    // projected by the GropuedProjection model, and summarized
+    // by the Summary model.
+    public abstract class ApiBarChartViewComponent<TProjection> : BarChartViewComponent {
+        // Inject DKApiAccess with dependency injection so that
+        // this view component can access the API
+        public ApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
+
+        protected virtual async Task<BarChart> ProjectChart(BarChartContext ctx, Projection<KeyValuePair<string, TProjection>> projection, Summary<TProjection, float> summary) {
+            // For each time interval, add a datum to the dataset
+            var rawData = await apiAccess.PullKeyDeviceActivity(ctx.TimeInterval.Start, ctx.TimeInterval.End);
+            // Parse string to JObject
+            var rootObject = JObject.Parse(rawData);
+            if (!rootObject.TryGetValue("Data", out var dataArrayToken)) {
+                throw new JsonArgumentException();
+            }
+
+            // Convert data array token to JEnumerable and
+            // filter out unwanted data
+            var dataArray = dataArrayToken.AsJEnumerable();
+            dataArray = ctx.Filter.FilterData(dataArray);
+
+            // Project each token to a value, and store
+            // the value in the associated category's
+            // collection
+            var projectedData = new Dictionary<string, Collection<TProjection>>();
+            foreach (var token in dataArray) {
+                if (token.Type != JTokenType.Object) {
+                    throw new JsonArgumentException();
+                }
+                try{
+                    var kvp = projection.Project((JObject) token);
+                    // If the category does not yet exist, add it
+                    if (!projectedData.ContainsKey(kvp.Key)) {
+                        projectedData.Add(kvp.Key, new Collection<TProjection>());
+                    }
+
+                    // Add the value to the category's collection
+                    projectedData[kvp.Key].Add(kvp.Value);
+                } catch(JsonArgumentException) {}
+            }
+
+            // Summarize each category's collection into a summary value,
+            // such as a mean, median, maximum, etc.
+            var summaryValues = new Dictionary<string, float>();
+            foreach (var kvp in projectedData) {
+                summaryValues.Add(kvp.Key, summary.Summarize(kvp.Value));
+            }
+
+            int backgroundHue = 0;
+            int borderHue = 0;
+            var hueIncrement = 360 / summaryValues.Count();
+
+            var orderedSummaryValues = summaryValues.OrderByDescending(s => s.Value).ToList();
+            var bars = orderedSummaryValues.Select(s => new Bar() {
+                Value = (int) s.Value,
+                Label = s.Key,
+                BackgroundColor = $"hsla({PostIncHue(ref backgroundHue, hueIncrement)}, {Bar.BackgroundSaturation}, {Bar.BackgroundLightness}, {Bar.BackgroundAlpha})",
+                BorderColor = $"hsla({PostIncHue(ref borderHue, hueIncrement)}, {Bar.BorderSaturation}, {Bar.BorderLightness}, {Bar.BorderAlpha})",
+            }).ToList();
+
+            return new BarChart() {
+                Bars = bars,
+                Label = "Dataset"
+            };
+        }
+
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection) {
+            var barChart = await ProjectChart(new BarChartContext(filter, timeInterval), projection, summary);
+            return await Task.Run(() => View(barChart));
+        }
+
+        protected class BarChartContext {
+            public Filter Filter {get;}
+            public TimeInterval TimeInterval {get;}
+            public BarChartContext(Filter filter, TimeInterval timeInterval) {
+                Filter = filter;
+                TimeInterval = timeInterval;
+            }
+        }
+    }
+}

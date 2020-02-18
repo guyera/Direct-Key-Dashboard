@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
 using InformationLibraries;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace DirectKeyDashboard.Views.Charting
@@ -14,7 +15,7 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public KeyCountsViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected override async Task<BarChart> ProjectChart() {
+        protected async Task<BarChart> ProjectChart() {
             // Eventually, attempt to pull the bar chart
             // itself straight from the cache so that the
             // full data doesn't need to be retrieved and
@@ -51,9 +52,9 @@ namespace DirectKeyDashboard.Views.Charting
             // asynchronous conflicts (where they use alternating hues rather
             // than corresponding hues), simply use two different hue variables
             // that increment separately.
-            var backgroundColors = groups.Select(g => $"hsla({postIncHue(ref hueBackground, hueIncrement)}, {Bar.BackgroundSaturation}, {Bar.BackgroundLightness}, {Bar.BackgroundAlpha})");
+            var backgroundColors = groups.Select(g => $"hsla({PostIncHue(ref hueBackground, hueIncrement)}, {Bar.BackgroundSaturation}, {Bar.BackgroundLightness}, {Bar.BackgroundAlpha})");
             var hueBorder = 0; // Reset hue for border colors
-            var borderColors = groups.Select(g => $"hsla({postIncHue(ref hueBorder, hueIncrement)}, {Bar.BorderSaturation}, {Bar.BorderLightness}, {Bar.BorderAlpha})");
+            var borderColors = groups.Select(g => $"hsla({PostIncHue(ref hueBorder, hueIncrement)}, {Bar.BorderSaturation}, {Bar.BorderLightness}, {Bar.BorderAlpha})");
 
             // Now we have enumerables of background colors, border colors, labels, and counts.
             // We just have to zip the lists together to get a nested quadruple
@@ -70,6 +71,11 @@ namespace DirectKeyDashboard.Views.Charting
                 Bars = bars.ToList(),
                 Label = "Number of Keys by Owner ID"
             };
+        }
+
+        public virtual async Task<IViewComponentResult> InvokeAsync() {
+            var barChart = await ProjectChart();
+            return await Task.Run(() => View(barChart));
         }
 
         private class ApiDataModel {

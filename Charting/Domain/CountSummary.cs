@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
-    public class AverageSummary : Summary<float, float> {
-        public override float Summarize(Collection<float> data) => data.Average();
+    public class CountSummary<T> : Summary<T, float> {
+        public override float Summarize(Collection<T> data) => data.Count();
     }
 }

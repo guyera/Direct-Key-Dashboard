@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using DirectKeyDashboard.Charting.Domain;
 using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,17 +14,10 @@ namespace DirectKeyDashboard.Views.Charting
             this.apiAccess = apiAccess;
         }
 
-        protected static int postIncHue(ref int hue, int hueIncrement) {
+        protected static int PostIncHue(ref int hue, int hueIncrement) {
             int res = hue; // Store existing hue value
             hue += hueIncrement; // Increment hue
             return res; // Return original hue value
-        }
-
-        protected abstract Task<BarChart> ProjectChart();
-
-        public virtual async Task<IViewComponentResult> InvokeAsync() {
-            var barChart = await ProjectChart();
-            return await Task.Run(() => View(barChart));
         }
     }
 }

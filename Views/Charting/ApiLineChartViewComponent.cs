@@ -18,7 +18,7 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public ApiLineChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<LineChart> ProjectChart(LineChartContext ctx) {
+        protected virtual async Task<LineChart> ProjectChart<TProjection>(LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
             foreach (var interval in ctx.TimeSeries.TimeIntervals) {
@@ -35,19 +35,19 @@ namespace DirectKeyDashboard.Views.Charting
                 dataArray = ctx.Filter.FilterData(dataArray);
 
                 // Project each token to a value
-                var projectedData = new Collection<float>();
+                var projectedData = new Collection<TProjection>();
                 foreach (var token in dataArray) {
                     if (token.Type != JTokenType.Object) {
                         throw new JsonArgumentException();
                     }
                     try{
-                        projectedData.Add(ctx.Projection.Project((JObject) token));
+                        projectedData.Add(projection.Project((JObject) token));
                     } catch(JsonArgumentException) {}
                 }
 
                 // Summarize the data and add it to the dataset
                 if (projectedData.Any()) {
-                    var datum = ctx.Summary.Summarize(projectedData);
+                    var datum = summary.Summarize(projectedData);
                     vertices.Add(new Vertex(datum));
                 }
             }
@@ -65,21 +65,18 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<float> summary, Filter filter, TimeSeries timeSeries, Projection projection) {
-            var lineChart = await ProjectChart(new LineChartContext(summary, filter, timeSeries, projection));
+        public virtual async Task<IViewComponentResult> InvokeAsync<TProjection>(Summary<TProjection, float> summary, Filter filter, TimeSeries timeSeries, Projection<TProjection> projection) {
+            var lineChart = await ProjectChart(new LineChartContext(filter, timeSeries), projection, summary);
             return await Task.Run(() => View(lineChart));
         }
 
         protected class LineChartContext {
-            public Summary<float> Summary {get;}
             public Filter Filter {get;}
             public TimeSeries TimeSeries {get;}
-            public Projection Projection {get;}
-            public LineChartContext(Summary<float> summary, Filter filter, TimeSeries timeSeries, Projection projection) {
-                Summary = summary;
+
+            public LineChartContext(Filter filter, TimeSeries timeSeries) {
                 Filter = filter;
                 TimeSeries = timeSeries;
-                Projection = projection;
             }
         }
     }

@@ -1,8 +1,8 @@
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace DirectKeyDashboard.Charting.Domain
 {
     public abstract class Summary<TIn, TOut> {
-        public abstract TOut Summarize(Collection<TIn> data);
+        public abstract TOut Summarize(IEnumerable<TIn> data);
     }
 }

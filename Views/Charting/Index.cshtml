@@ -24,31 +24,60 @@
         @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
         *@
 
-        @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
+        @*
+
+        @await Component.InvokeAsync(typeof(ApiBarChartViewComponent<string>), new {
             summary = new CountSummary<string>(),
             filter = new Filter(new List<Criterion>()),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
             projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
         })
 
+        *@
+
         @*
         @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
         *@
         
+        @*
+
         <h3>Operation Instances</h3>
+
+        *@
+
         @*
         <h4>Proportion of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
         *@
+
+        @*
+
         <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationCountsViewComponent))
-        @*
+
+        *@
+
         <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
         <h4>Comparison of Duration Types</h4>
         @await Component.InvokeAsync(typeof(OperationTimingsViewComponent))
         <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
         @await Component.InvokeAsync(typeof(OperationTimingsPivotedViewComponent))
 
+        <h3 style="margin-top: 50px">Generalized non-quick Connect Operation Times</h3>
+        @await Component.InvokeAsync(typeof(ApiGroupedBarChartViewComponent<float>), new {
+            summary = new CountSummary<string>(),
+            filter = new Filter(new List<Criterion>(){
+                // TODO Equal to zero criterion.
+            }),
+            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
+            projection = new SimpleCompositeGroupedProjection<float>("OperationDescription", new List<string>() {
+                "OperationCommDurationMs",
+                "OperationConnectDurationMs",
+                "OperationDurationMs"
+            })
+        })
+
+        @*
         <h3 style="margin-top: 50px">Quick Connect Operation Times</h3>
         <h4>Comparison of Duration Types</h4>
         @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsViewComponent))

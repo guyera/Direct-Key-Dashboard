@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -32,10 +33,11 @@ namespace DirectKeyDashboard.Views.Charting
             var dataArray = dataArrayToken.AsJEnumerable();
             dataArray = filter.FilterData(dataArray);
 
+
             // Project each token to a value, and store
             // the value in the associated category's
             // collection
-            var projectedData = new Dictionary<string, Collection<IDictionary<string, TProjection>>();
+            var projectedData = new Dictionary<string, Collection<IDictionary<string, TProjection>>>();
             foreach (var token in dataArray) {
                 if (token.Type != JTokenType.Object) {
                     throw new JsonArgumentException();
@@ -84,12 +86,12 @@ namespace DirectKeyDashboard.Views.Charting
             // Construct an ordered list of subLabels for the inner data points.
             // This order must be maintained across all datasets, so this
             // list can be used as the ordering of keys.
-            var subLabels = summaryValues.Any() ? summaryValues.First().Value.Select(kvp => kvp.Key).ToList() : null;
+            var subLabels = summaryValues.Any() ? summaryValues.First().Value.Select(kvp => kvp.Key).ToList() : new List<string>();
 
             // Each dataset gets its own color
             int backgroundHue = 0;
             int borderHue = 0;
-            var hueIncrement = 360 / summaryValues.Count();
+            var hueIncrement = summaryValues.Count() == 0 ? 0 : 360 / summaryValues.Count();
 
             // Construct a list of bar groups using the summaryValues and the subLabels as a
             // guide for inner key ordering. Note: Select() preserves ordering, so using
@@ -108,9 +110,9 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, bool pivot = false) {
             var barChart = await ProjectChart(filter, timeInterval, projection, summary);
-            return await Task.Run(() => View(barChart));
+            return await Task.Run(() => View(pivot ? barChart.Pivot() : barChart));
         }
     }
 }

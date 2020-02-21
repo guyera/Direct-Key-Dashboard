@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class MedianSummary : Summary<float, float> {
-        public override float Summarize(Collection<float> data) {
+        public override float Summarize(IEnumerable<float> data) {
             var orderedData = data.OrderBy(d => d);
             var count = orderedData.Count();
             // If there are no elements, return zero as the median.

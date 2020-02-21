@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
@@ -23,7 +25,7 @@ namespace DirectKeyDashboard.Views.Charting
             // the bar chart reprojected on, for example,
             // page refresh. For now, pull the data every
             // time.
-            string rawData = await apiAccess.PullKeyDeviceActivity();
+            string rawData = await apiAccess.PullKeyDeviceActivity(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture));
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             serializerSettings.NullValueHandling = NullValueHandling.Ignore;
@@ -81,7 +83,7 @@ namespace DirectKeyDashboard.Views.Charting
             var hueBackground = 0; // Start at zero degrees / red
 
             // Increment 1/n of the color wheel each iteration
-            var hueIncrement = 360 / groups.Count();
+            var hueIncrement = groups.Count() == 0 ? 0 : 360 / groups.Count();
 
             // Use the PostIncHue function to get the original value of the hue
             // while simultaneously updating it to a new value by incrementation.

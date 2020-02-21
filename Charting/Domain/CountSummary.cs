@@ -4,6 +4,6 @@ using System.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
     public class CountSummary<T> : Summary<T, float> {
-        public override float Summarize(Collection<T> data) => data.Count();
+        public override float Summarize(IEnumerable<T> data) => data.Count();
     }
 }

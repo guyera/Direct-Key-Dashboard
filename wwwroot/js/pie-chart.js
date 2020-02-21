@@ -17,30 +17,21 @@ var scriptId = window["pieChartScriptIds"].shift();
 var script = $('script[id="' + scriptId + '"]'); // Find script tag associated with this bar chart
 var canvasID = script.attr('data-canvas-id'); // Get canvas ID attribute
 var ctx = $('#' + canvasID); // Get chart context
+var jsId = script.attr('data-js-id'); // Chart ID encoded as proper JS global variable name
 
 // Simple details about the chart display (such as hyperparameters) via
 // the attributes of this script
 var chartLabel = script.attr('data-chart-label');
 var sliceBorderWidth = parseInt(script.attr('data-slice-border-width'));
 
-// Get the names of the global variables injected into the razor page
-// representing the data
-var labelsGlobal = script.attr('data-labels-global');
-var countsGlobal = script.attr('data-counts-global');
-var backgroundColorsGlobal = script.attr('data-background-colors-global');
-var borderColorsGlobal = script.attr('data-border-colors-global');
-
-// Get the data itself reflectively using the global variable names and
-// inject into the chart
-
 var chart = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: window[labelsGlobal],
+        labels: window['pieChartData'][jsId].labels,
         datasets: [{
-            data: window[countsGlobal],
-            backgroundColor: window[backgroundColorsGlobal],
-            borderColor: window[borderColorsGlobal],
+            data: window['pieChartData'][jsId].counts,
+            backgroundColor: window['pieChartData'][jsId].backgroundColors,
+            borderColor: window['pieChartData'][jsId].borderColors,
             borderWidth: sliceBorderWidth
         }]
     },

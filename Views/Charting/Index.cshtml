@@ -8,8 +8,8 @@
 
 <div class="text-center">
     <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        @*
-        @await Component.InvokeAsync(typeof(ApiLineChartViewComponent), new {
+        
+        @await Component.InvokeAsync(typeof(FloatProjectingApiLineChartViewComponent), new {
             summary = new AverageSummary(),
             filter = new Filter(new List<Criterion>()),
             timeSeries = new TimeSeries(new List<TimeInterval>() {
@@ -21,48 +21,27 @@
             projection = new SimpleProjection<float>("OperationDurationMs")
         })
 
-        @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
-        *@
-
         @*
-
-        @await Component.InvokeAsync(typeof(ApiBarChartViewComponent<string>), new {
-            summary = new CountSummary<string>(),
-            filter = new Filter(new List<Criterion>()),
-            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
-            projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
-        })
+        @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
 
         *@
 
         @*
         @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
         *@
-        
-        @*
 
         <h3>Operation Instances</h3>
-
-        *@
-
-        @*
+        
         <h4>Proportion of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
-        *@
-
-        @*
 
         <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(OperationCountsViewComponent))
-
-        *@
-
-        <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
-        <h4>Comparison of Duration Types</h4>
-        @await Component.InvokeAsync(typeof(OperationTimingsViewComponent))
-        
-        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
-        @await Component.InvokeAsync(typeof(OperationTimingsPivotedViewComponent))
+        @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
+            summary = new CountSummary<string>(),
+            filter = new Filter(new List<Criterion>()),
+            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
+            projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
+        })
         
         <h3 style="margin-top: 50px">Generalized non-quick Connect Operation Times</h3>
         <h4 style="margin-top: 20px">Comparison of Duration Types</h4>

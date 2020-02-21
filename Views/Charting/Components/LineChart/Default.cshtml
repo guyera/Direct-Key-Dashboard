@@ -4,11 +4,6 @@
     var id = Guid.NewGuid().ToString();
     var jsId = id.Replace("-", "");
     var canvasID = $"line-chart-canvas-{id}";
-    var valuesGlobal = $"lineValues_{jsId}";
-    var labelsGlobal = $"lineLabels_{jsId}";
-    var colorsGlobal = $"lineColors_{jsId}";
-    var pointColorsGlobal = $"linePointColors_{jsId}";
-    var categoryLabelsGlobal = $"lineCategoryLabels_{jsId}";
 }
 
 <div class="chart-container" style="position:relative; width:60vw; margin-left:auto; margin-right:auto">
@@ -22,18 +17,22 @@
         window['lineChartScriptIds'] = [];
     }
     window['lineChartScriptIds'].push('@Html.Raw(id)');
-    @(Html.Raw(valuesGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Vertices.Select(v => v.Value).ToList()).ToList()))');
-    @(Html.Raw(labelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Label).ToList()))');
-    @(Html.Raw(colorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Color).ToList()))');
-    @(Html.Raw(pointColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.PointColor).ToList()))');
-    @(Html.Raw(categoryLabelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryLabels))');
+
+    if (window['lineChartData'] == null) {
+        window['lineChartData'] = {};
+    }
+
+    // Add this chart's data to the window's global
+    window['lineChartData']['@Html.Raw(jsId)'] = {
+        labels: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Label).ToList()))'),
+        values: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Vertices.Select(v => v.Value).ToList()).ToList()))'),
+        colors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.Color).ToList()))'),
+        pointColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Lines.Select(l => l.PointColor).ToList()))'),
+        categoryLabels: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryLabels))')
+    };
 </script>
 
 <script defer src="~/js/line-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasID)"
                                                   data-line-width="3"
                                                   data-point-border-width="3"
-                                                  data-values-global="@Html.Raw(valuesGlobal)"
-                                                  data-colors-global="@Html.Raw(colorsGlobal)"
-                                                  data-point-colors-global="@Html.Raw(pointColorsGlobal)"
-                                                  data-labels-global="@Html.Raw(labelsGlobal)"
-                                                  data-category-labels-global="@Html.Raw(categoryLabelsGlobal)"></script>
+                                                  data-js-id="@Html.Raw(jsId)"></script>

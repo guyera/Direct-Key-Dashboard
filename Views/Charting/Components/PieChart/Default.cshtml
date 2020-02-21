@@ -4,10 +4,6 @@
     var id = Guid.NewGuid().ToString();
     var jsId = id.Replace("-", "");
     var canvasID = $"pie-chart-canvas-{id}";
-    var labelsGlobal = $"sliceLabels_{jsId}";
-    var countsGlobal = $"sliceValues_{jsId}";
-    var backgroundColorsGlobal = $"sliceBackgroundColors_{jsId}";
-    var borderColorsGlobal = $"sliceBorderColors_{jsId}";
 }
 
 <div class="chart-container" style="position:relative; width:60vw; margin-left:auto; margin-right:auto">
@@ -21,16 +17,22 @@
         window['pieChartScriptIds'] = [];
     }
     window['pieChartScriptIds'].push('@Html.Raw(id)');
-    @(Html.Raw(labelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Label).ToList()))');
-    @(Html.Raw(countsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Count).ToList()))');
-    @(Html.Raw(backgroundColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BackgroundColor).ToList()))');
-    @(Html.Raw(borderColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BorderColor).ToList()))');
+
+    if (window['pieChartData'] == null) {
+        window['pieChartData'] = {};
+    }
+
+    // Add this chart's data to the window's global
+    window['pieChartData']['@Html.Raw(jsId)'] = {
+        labels: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Label).ToList()))'),
+        counts: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.Count).ToList()))'),
+        backgroundColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BackgroundColor).ToList()))'),
+        borderColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Slices.Select(s => s.BorderColor).ToList()))')
+    };
+
 </script>
 
 <script defer src="~/js/pie-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasID)"
                                                   data-chart-label="@Html.Raw(Model.Label)"
                                                   data-slice-border-width="1"
-                                                  data-labels-global="@Html.Raw(labelsGlobal)"
-                                                  data-counts-global="@Html.Raw(countsGlobal)"
-                                                  data-background-colors-global="@Html.Raw(backgroundColorsGlobal)"
-                                                  data-border-colors-global="@Html.Raw(borderColorsGlobal)"></script>
+                                                  data-js-id="@Html.Raw(jsId)"></script>

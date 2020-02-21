@@ -13,12 +13,12 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the Projection model, and summarized
     // by the Summary model.
-    public class ApiLineChartViewComponent : LineChartViewComponent {
+    public class ApiLineChartViewComponent<TProjection> : LineChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiLineChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<LineChart> ProjectChart<TProjection>(LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<LineChart> ProjectChart(LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
             foreach (var interval in ctx.TimeSeries.TimeIntervals) {
@@ -65,7 +65,7 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync<TProjection>(Summary<TProjection, float> summary, Filter filter, TimeSeries timeSeries, Projection<TProjection> projection) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeSeries timeSeries, Projection<TProjection> projection) {
             var lineChart = await ProjectChart(new LineChartContext(filter, timeSeries), projection, summary);
             return await Task.Run(() => View(lineChart));
         }

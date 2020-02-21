@@ -17,6 +17,7 @@ var scriptId = window["lineChartScriptIds"].shift();
 var script = $('script[id="' + scriptId + '"]'); // Find script tag associated with this line chart
 var canvasID = script.attr('data-canvas-id'); // Get canvas ID attribute
 var ctx = $('#' + canvasID); // Get chart context
+var jsId = script.attr('data-js-id');
 
 // Simple details about the chart display (such as hyperparameters) via
 // the attributes of this script
@@ -26,27 +27,19 @@ var lineWidth = parseInt(script.attr('data-line-width'));
 var pointColor = script.attr('data-point-color');
 var pointBorderWidth = parseInt(script.attr('data-point-border-width'));
 
-// Get the names of the global variables injected into the razor page
-// representing the data
-var valuesGlobal = script.attr('data-values-global');
-var labelsGlobal = script.attr('data-labels-global');
-var colorsGlobal = script.attr('data-colors-global');
-var pointColorsGlobal = script.attr('data-point-colors-global');
-var categoryLabelsGlobal = script.attr('data-category-labels-global');
-
 // Get the data itself reflectively using the global variable names and
 // inject into the chart
 
 var datasets = [];
-for (var i = 0; i < window[valuesGlobal].length; i++) {
+for (var i = 0; i < window['lineChartData'][jsId].values.length; i++) {
     datasets.push({
-        label: window[labelsGlobal][i],
-        data: window[valuesGlobal][i],
+        label: window['lineChartData'][jsId].labels[i],
+        data: window['lineChartData'][jsId].values[i],
         lineTension: 0.4,
         fill: false,
-        borderColor: window[colorsGlobal][i],
+        borderColor: window['lineChartData'][jsId].colors[i],
         borderWidth: lineWidth,
-        pointBorderColor: window[pointColorsGlobal][i],
+        pointBorderColor: window['lineChartData'][jsId].pointColors[i],
         pointBorderWidth: pointBorderWidth
     });
 }
@@ -54,7 +47,7 @@ for (var i = 0; i < window[valuesGlobal].length; i++) {
 var chart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: window[categoryLabelsGlobal],
+        labels: window['lineChartData'][jsId].categoryLabels,
         datasets: datasets
     },
     options: {

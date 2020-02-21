@@ -17,31 +17,47 @@ var scriptId = window["barChartScriptIds"].shift();
 var script = $('script[id="' + scriptId + '"]'); // Find script tag associated with this bar chart
 var canvasID = script.attr('data-canvas-id'); // Get canvas ID attribute
 var ctx = $('#' + canvasID); // Get chart context
+var jsId = script.attr('data-js-id'); // Get the canvas ID encoded as a valid JS variable name
 
 // Simple details about the chart display (such as hyperparameters) via
 // the attributes of this script
 var chartLabel = script.attr('data-chart-label');
 var barBorderWidth = parseInt(script.attr('data-bar-border-width'));
 
-// Get the names of the global variables injected into the razor page
-// representing the data
-var labelsGlobal = script.attr('data-labels-global');
-var valuesGlobal = script.attr('data-values-global');
-var backgroundColorsGlobal = script.attr('data-background-colors-global');
-var borderColorsGlobal = script.attr('data-border-colors-global');
+// Use the CURRENT JS ID to generate
+// a click handler. As this script is duplicated
+// for other charts, the JS ID variable will get changed,
+// and the handler will only ever use the most
+// recent value of the JS ID variable. To force it to
+// remember the current value,
+// pass it into a function-generating function.
+// Since the arguments get evaluated immediately,
+// it will be remembered and localized to the handler
+// permanently. That way, each chart's handler uses
+// its own data.
+var handleClick = (function(jsId) {
+    return function handleClick(evt, activeElements) {
+        if (activeElements != null && activeElements != undefined && activeElements[0] != null &&
+            activeElements[0] != undefined) {
+                console.log("Label: " + window['barChartData'][jsId].labels[activeElements[0].index]);
+                console.log("Value: " + window['barChartData'][jsId].values[activeElements[0].index]);
+            } else {
+                console.log("Did not click on bar.");
+            }
+        }
+})(jsId); // evaulate jsId IMMEDIATELY and permanently localize it to the returned function
 
-// Get the data itself reflectively using the global variable names and
-// inject into the chart
+// Get the data itself reflectively using the js ID and generate the chart
 
 var chart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: window[labelsGlobal],
+        labels: window['barChartData'][jsId].labels,
         datasets: [{
             label: chartLabel,
-            data: window[valuesGlobal],
-            backgroundColor: window[backgroundColorsGlobal],
-            borderColor: window[borderColorsGlobal],
+            data: window['barChartData'][jsId].values,
+            backgroundColor: window['barChartData'][jsId].backgroundColors,
+            borderColor: window['barChartData'][jsId].borderColors,
             borderWidth: barBorderWidth
         }]
     },
@@ -52,6 +68,8 @@ var chart = new Chart(ctx, {
                     beginAtZero: true
                 }
             }]
-        }
+        },
+        onClick: handleClick
     }
 });
+

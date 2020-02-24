@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
@@ -23,16 +25,16 @@ namespace DirectKeyDashboard.Views.Charting
             // the bar chart reprojected on, for example,
             // page refresh. For now, pull the data every
             // time.
-            string rawData = await apiAccess.PullKeyDeviceActivity();
+            string rawData = await apiAccess.PullKeyDeviceActivity(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture));
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
-            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0).GroupBy(m => m.OperationCode);
+            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0 && d.OperationUserIntentDurationMs.HasValue && d.OperationTotalDurationMs.HasValue && d.OperationUserIntentDurationMs.HasValue).GroupBy(m => m.OperationCode);
             var averageUserIntentTimes = new Dictionary<string, int>(
                 groups.Select(
                     g => new KeyValuePair<string, int>(
-                        g.First().OperationCode,
+                        g.First()?.OperationCode ?? "Test",
                         (int) g.Select(d => d.OperationUserIntentDurationMs).Average())).ToList());
             var averageTotalTimes = new Dictionary<string, int>(
                 groups.Select(

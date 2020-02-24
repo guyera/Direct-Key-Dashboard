@@ -18,6 +18,22 @@ namespace DirectKeyDashboard.Controllers
             return View();
         }
 
+        public IActionResult ViewOne() {
+            return View();
+        }
+        
+        public IActionResult ViewTwo() {
+            return View();
+        }
+
+        public IActionResult ViewThree() {
+            return View();
+        }
+
+        public IActionResult ViewFour() {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

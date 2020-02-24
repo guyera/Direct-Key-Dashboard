@@ -31,6 +31,8 @@ namespace DirectKeyDashboard.Charting.Domain {
             switch(ValueRelation) {
                 case Relation.Equal:
                     return Math.Abs(value.Value - Value) <= Precision;
+                case Relation.NotEqual:
+                    return Math.Abs(value.Value - Value) > Precision;
                 case Relation.Greater:
                     return value > Value;
                 case Relation.GreaterOrEqual:
@@ -46,6 +48,7 @@ namespace DirectKeyDashboard.Charting.Domain {
 
         public enum Relation{
             Equal,
+            NotEqual,
             Greater,
             Less,
             GreaterOrEqual,

@@ -2,6 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DirectKeyDashboard.Models;
+using DirectKeyDashboard.Views.Charting;
+using System.Collections.Generic;
+using DirectKeyDashboard.Charting.Domain;
+using System;
+using System.Globalization;
 
 namespace DirectKeyDashboard.Controllers
 {
@@ -32,6 +37,20 @@ namespace DirectKeyDashboard.Controllers
 
         public IActionResult ViewFour() {
             return View();
+        }
+
+        public IActionResult FloatProjectingApiLineChart() {
+            return ViewComponent(typeof(FloatProjectingApiLineChartViewComponent), new {
+                summary = new AverageSummary(),
+                filter = new Filter(new List<Criterion>()),
+                timeSeries = new TimeSeries(new List<TimeInterval>() {
+                    new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                    new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                    new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                    new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                }),
+                projection = new SimpleProjection<float>("OperationDurationMs")
+            });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

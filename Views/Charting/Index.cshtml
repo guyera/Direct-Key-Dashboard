@@ -7,8 +7,8 @@
 }
 
 <div class="text-center">
-    <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        
+    <div id="dynamic-chart-container" style="display: flex; flex-direction: column; width: 100%; align-items: center;">
+        @*
         @await Component.InvokeAsync(typeof(FloatProjectingApiLineChartViewComponent), new {
             summary = new AverageSummary(),
             filter = new Filter(new List<Criterion>()),
@@ -21,6 +21,8 @@
             projection = new SimpleProjection<float>("OperationDurationMs")
         })
 
+        *@
+
         @*
         @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
 
@@ -30,11 +32,13 @@
         @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
         *@
 
+        @*
         <h3>Operation Instances</h3>
         
         <h4>Proportion of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
-
+        
+        *@
         <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
             summary = new CountSummary<string>(),
@@ -42,6 +46,8 @@
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
             projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
         })
+
+        @*
         
         <h3 style="margin-top: 50px">Generalized non-quick Connect Operation Times</h3>
         <h4 style="margin-top: 20px">Comparison of Duration Types</h4>
@@ -72,5 +78,7 @@
                 "OperationDurationMs"
             })
         })
+
+        *@
     </div>
 </div>

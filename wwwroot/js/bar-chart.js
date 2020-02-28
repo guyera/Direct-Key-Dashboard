@@ -35,17 +35,21 @@ var barBorderWidth = parseInt(script.attr('data-bar-border-width'));
 // it will be remembered and localized to the handler
 // permanently. That way, each chart's handler uses
 // its own data.
-var handleClick = (function(jsId) {
+var handleClick = (function(jsId, ctx) {
     return function handleClick(evt, activeElements) {
         if (activeElements != null && activeElements != undefined && activeElements[0] != null &&
             activeElements[0] != undefined) {
                 console.log("Label: " + window['barChartData'][jsId].labels[activeElements[0].index]);
                 console.log("Value: " + window['barChartData'][jsId].values[activeElements[0].index]);
+                console.log("Loading line chart...")
+                var tempChart = $(document.createElement('div'));
+                ctx.parent().append(tempChart);
+                tempChart.load("Charting/FloatProjectingApiLineChart");
             } else {
                 console.log("Did not click on bar.");
             }
         }
-})(jsId); // evaulate jsId IMMEDIATELY and permanently localize it to the returned function
+})(jsId, ctx); // evaulate jsId IMMEDIATELY and permanently localize it to the returned function
 
 // Get the data itself reflectively using the js ID and generate the chart
 

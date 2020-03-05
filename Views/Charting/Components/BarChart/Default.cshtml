@@ -30,7 +30,9 @@
         labels: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Label).ToList()))'),
         values: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Value).ToList()))'),
         backgroundColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BackgroundColor).ToList()))'),
-        borderColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BorderColor).ToList()))')
+        borderColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BorderColor).ToList()))'),
+        drilldownUris: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => Url.Action(b.DrilldownAction, b.DrilldownController)).ToList()))'),
+        drilldownData: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.DrilldownQueryParameters).ToList()))')
     };
 </script>
 

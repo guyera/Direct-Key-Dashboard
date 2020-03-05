@@ -44,7 +44,10 @@ var handleClick = (function(jsId, ctx) {
                 console.log("Loading line chart...")
                 var tempChart = $(document.createElement('div'));
                 ctx.parent().append(tempChart);
-                tempChart.load("Charting/FloatProjectingApiLineChart");
+                console.log(window['barChartData'][jsId].drilldownUris[activeElements[0].index]);
+                console.log(window['barChartData'][jsId].drilldownData[activeElements[0].index]);
+                
+                tempChart.load(window['barChartData'][jsId].drilldownUris[activeElements[0].index], window['barChartData'][jsId].drilldownData[activeElements[0].index]);
             } else {
                 console.log("Did not click on bar.");
             }

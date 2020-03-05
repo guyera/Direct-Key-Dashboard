@@ -9,13 +9,14 @@ namespace DirectKeyDashboard.Charting.Domain {
     // else it may be filtered out.
     public class FloatCriterion : Criterion {
         private const float Precision = 0.01f;
-
+        private string Key {get;}
         private float Value {get;}
         private Relation ValueRelation {get;}
 
-        public FloatCriterion(string key, float value, Relation valueRelation) : base(key) {
-            this.Value = value;
-            this.ValueRelation = valueRelation;
+        public FloatCriterion(string key, float value, Relation valueRelation) {
+            Key = key;
+            Value = value;
+            ValueRelation = valueRelation;
         }
 
         public override bool SatisfiedBy(JObject jobject) {

@@ -20,5 +20,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         // Colors for display
         public string BackgroundColor {get; set;}
         public string BorderColor {get; set;}
+        public string DrilldownController {get; set;}
+        public string DrilldownAction {get; set;}
+        public object DrilldownQueryParameters {get; set;}
     }
 }

@@ -17,9 +17,11 @@
         <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
         @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
             summary = new CountSummary<string>(),
-            filter = new Filter(new List<Criterion>()),
+            filter = new Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>>(new List<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>>()),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
-            projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
+            projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription"),
+            drilldownController = "Charting",
+            drilldownAction = "StringProjectingApiLineChart"
         })
         
     </div>

@@ -42,7 +42,6 @@ namespace DirectKeyDashboard.Controllers
         public IActionResult FloatProjectingApiLineChart() {
             return ViewComponent(typeof(FloatProjectingApiLineChartViewComponent), new {
                 summary = new AverageSummary(),
-                filter = new Filter(new List<Criterion>()),
                 timeSeries = new TimeSeries(new List<TimeInterval>() {
                     new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
                     new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
@@ -50,6 +49,16 @@ namespace DirectKeyDashboard.Controllers
                     new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                 }),
                 projection = new SimpleProjection<float>("OperationDurationMs")
+            });
+        }
+
+        [HttpPost]
+        public IActionResult StringProjectingApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
+            return ViewComponent(typeof(StringProjectingApiLineChartViewComponent), new {
+                summary,
+                filter,
+                timeSeries,
+                projection
             });
         }
 

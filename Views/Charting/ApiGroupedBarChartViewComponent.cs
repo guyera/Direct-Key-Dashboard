@@ -13,12 +13,13 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the GropuedProjection model, and summarized
     // by the Summary model.
-    public class ApiGroupedBarChartViewComponent<TProjection> : GroupedBarChartViewComponent {
+    public class ApiGroupedBarChartViewComponent<TProjection, TCriterion> : GroupedBarChartViewComponent
+            where TCriterion : Criterion {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiGroupedBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<GroupedBarChart> ProjectChart(Filter filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<TCriterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -109,7 +110,7 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, bool pivot = false) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<TCriterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, bool pivot = false) {
             var barChart = await ProjectChart(filter, timeInterval, projection, summary);
             return await Task.Run(() => View(pivot ? barChart.Pivot() : barChart));
         }

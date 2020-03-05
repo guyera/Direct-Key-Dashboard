@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
@@ -14,12 +15,15 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the GropuedProjection model, and summarized
     // by the Summary model.
-    public abstract class ApiBarChartViewComponent<TProjection> : BarChartViewComponent {
+    public abstract class ApiBarChartViewComponent<TProjection, TSummary, TGroupedProjection, TCriterion> : BarChartViewComponent
+            where TSummary : Summary<TProjection, float>
+            where TGroupedProjection : GroupedProjection<TProjection>
+            where TCriterion : Criterion {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(BarChartContext ctx, Projection<KeyValuePair<string, TProjection>> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<BarChart> ProjectChart(BarChartContext ctx, TGroupedProjection projection, TSummary summary, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(ctx.TimeInterval.Start, ctx.TimeInterval.End);
             // Parse string to JObject
@@ -70,6 +74,21 @@ namespace DirectKeyDashboard.Views.Charting
                 Label = s.Key,
                 BackgroundColor = $"hsla({PostIncHue(ref backgroundHue, hueIncrement)}, {Bar.BackgroundSaturation}, {Bar.BackgroundLightness}, {Bar.BackgroundAlpha})",
                 BorderColor = $"hsla({PostIncHue(ref borderHue, hueIncrement)}, {Bar.BorderSaturation}, {Bar.BorderLightness}, {Bar.BorderAlpha})",
+                DrilldownController = drilldownController,
+                DrilldownAction = drilldownAction,
+                DrilldownQueryParameters = new {
+                    summary, // Summarize drilldown data in the same way
+                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>(new List<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>() { // Match data with the same category / key as this bar
+                        new ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>(new CategoryProjection<TProjection, TGroupedProjection>(projection), s.Key)
+                    }),
+                    timeSeries = new TimeSeries(new List<TimeInterval>() {
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                    }),
+                    projection = new ValueProjection<TProjection, TGroupedProjection>(projection) // Project drilldown data in the same way, but only project the value, not the key / value pair (since all keys / categories are the same in a single drilldown chart)
+                }
             }).ToList();
 
             return new BarChart() {
@@ -78,15 +97,15 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection) {
-            var barChart = await ProjectChart(new BarChartContext(filter, timeInterval), projection, summary);
+        public virtual async Task<IViewComponentResult> InvokeAsync(TSummary summary, Filter<TCriterion> filter, TimeInterval timeInterval, TGroupedProjection projection, string drilldownController, string drilldownAction) {
+            var barChart = await ProjectChart(new BarChartContext(filter, timeInterval), projection, summary, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
         }
 
         protected class BarChartContext {
-            public Filter Filter {get;}
+            public Filter<TCriterion> Filter {get;}
             public TimeInterval TimeInterval {get;}
-            public BarChartContext(Filter filter, TimeInterval timeInterval) {
+            public BarChartContext(Filter<TCriterion> filter, TimeInterval timeInterval) {
                 Filter = filter;
                 TimeInterval = timeInterval;
             }

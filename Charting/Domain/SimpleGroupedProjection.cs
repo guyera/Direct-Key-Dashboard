@@ -8,9 +8,11 @@ namespace DirectKeyDashboard.Charting.Domain
     // it is pulled straight out of the object
     // by its token name.
     public class SimpleGroupedProjection<T> : GroupedProjection<T> {
-        private readonly string CategoryTokenKey;
-        private readonly string ValueTokenKey;
+        public string CategoryTokenKey {get; set;}
+        public string ValueTokenKey {get; set;}
         
+        // For model binding
+        public SimpleGroupedProjection(){}
         public SimpleGroupedProjection(string categoryTokenKey, string valueTokenKey) {
             CategoryTokenKey = categoryTokenKey;
             ValueTokenKey = valueTokenKey;

@@ -6,10 +6,15 @@ namespace DirectKeyDashboard.Charting.Domain {
     // A filter is based on the intersection
     // of a list of criteria which restrict the
     // range of possible floating point values
-    public class Filter {
-        public IEnumerable<Criterion> Criteria {get;}
+    public class Filter<TCriterion>
+        where TCriterion : Criterion
+     {
+        public IEnumerable<TCriterion> Criteria {get; set;}
 
-        public Filter(IEnumerable<Criterion> criteria) {
+        // For model bounding
+        public Filter(){}
+
+        public Filter(IEnumerable<TCriterion> criteria) {
             Criteria = criteria;
         }
 

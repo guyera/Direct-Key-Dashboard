@@ -11,7 +11,7 @@
         
         @await Component.InvokeAsync(typeof(FloatProjectingApiLineChartViewComponent), new {
             summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>()),
+            filter = new Filter<FloatCriterion>(new List<FloatCriterion>()),
             timeSeries = new TimeSeries(new List<TimeInterval>() {
                     new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
                     new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
@@ -25,7 +25,7 @@
         <h4 style="margin-top: 20px">Comparison of Duration Types</h4>
         @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
             summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>(){
+            filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
             }),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
@@ -40,7 +40,7 @@
         <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
         @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
             summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>(){
+            filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
             }),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),

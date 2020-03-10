@@ -8,52 +8,11 @@
 
 <div class="text-center">
     <div id="dynamic-chart-container" style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        @*
-        @await Component.InvokeAsync(typeof(FloatProjectingApiLineChartViewComponent), new {
-            summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>()),
-            timeSeries = new TimeSeries(new List<TimeInterval>() {
-                    new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                    new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                    new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                    new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
-            }),
-            projection = new SimpleProjection<float>("OperationDurationMs")
-        })
-
-        *@
-
-        @*
-        @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
-
-        *@
-
-        @*
-        @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
-        *@
-
-        @*
-        <h3>Operation Instances</h3>
-        
-        <h4>Proportion of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
-        
-        *@
-        <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
-            summary = new CountSummary<string>(),
-            filter = new Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>>(new List<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>>()),
-            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
-            projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription")
-        })
-
-        @*
-        
-        <h3 style="margin-top: 50px">Generalized non-quick Connect Operation Times</h3>
+        <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
         <h4 style="margin-top: 20px">Comparison of Duration Types</h4>
         @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
             summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>(){
+            filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
             }),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
@@ -62,23 +21,9 @@
                 "OperationConnectDurationMs",
                 "OperationDurationMs"
             }),
-            pivot = true // Pivot this chart to compare by duration types rather than operation type
+            drilldownAction = "FloatProjectingApiLineChart",
+            drilldownController = "Charting",
+            pivot = false // Pivot this chart to compare by duration types rather than operation type
         })
-
-        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
-        @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
-            summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>(){
-                new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
-            }),
-            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
-            projection = new SimpleCompositeGroupedProjection<float>("OperationDescription", new List<string>() {
-                "OperationCommDurationMs",
-                "OperationConnectDurationMs",
-                "OperationDurationMs"
-            })
-        })
-
-        *@
     </div>
 </div>

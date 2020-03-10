@@ -31,6 +31,9 @@ namespace DirectKeyDashboard.Charting.Domain
                     Values = BarGroups.Select(bg => bg.Values.Count() > i ? bg.Values[i] : 0).ToList(),
                     BackgroundColor = $"hsla({backgroundHue}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})",
                     BorderColor = $"hsla({borderHue}, {BarGroup.BorderSaturation}, {BarGroup.BorderLightness}, {BarGroup.BorderAlpha})",
+                    DrilldownActions = BarGroups.Select(bg => bg.DrilldownActions.Count() > i ? bg.DrilldownActions[i] : bg.DrilldownActions.First()).ToList(),
+                    DrilldownControllers = BarGroups.Select(bg => bg.DrilldownControllers.Count() > i ? bg.DrilldownControllers[i] : bg.DrilldownControllers.First()).ToList(),
+                    DrilldownQueryParameters = BarGroups.Select(bg => bg.DrilldownQueryParameters.Count() > i ? bg.DrilldownQueryParameters[i] : new object{}).ToList(),
                 };
                 backgroundHue += hueInc;
                 borderHue += hueInc;

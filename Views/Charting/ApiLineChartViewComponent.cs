@@ -14,16 +14,16 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the Projection model, and summarized
     // by the Summary model.
-    public class ApiLineChartViewComponent<TProjection, TCriterion> : LineChartViewComponent
+    public class ApiLineChartViewComponent<TProjection, TPreCriterion, TCriterion> : LineChartViewComponent
+            where TPreCriterion : Criterion
             where TCriterion : Criterion {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiLineChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<LineChart> ProjectChart(LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<LineChart> ProjectChart(Filter<TPreCriterion> preFilter, LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
-            Console.WriteLine($"Num time series: {ctx.TimeSeries.TimeIntervals.Count()}");
             foreach (var interval in ctx.TimeSeries.TimeIntervals) {
                 var rawData = await apiAccess.PullKeyDeviceActivity(interval.Start, interval.End);
                 // Parse string to JObject
@@ -35,9 +35,8 @@ namespace DirectKeyDashboard.Views.Charting
                 // Convert data array token to JEnumerable and
                 // filter out unwanted data
                 var dataArray = dataArrayToken.AsJEnumerable();
-                Console.WriteLine($"Unfiltered count: {dataArray.Count()}");
+                dataArray = preFilter.FilterData(dataArray);
                 dataArray = ctx.Filter.FilterData(dataArray);
-                Console.WriteLine($"Filtered count: {dataArray.Count()}");
 
                 // Project each token to a value
                 var projectedData = new Collection<TProjection>();
@@ -54,6 +53,8 @@ namespace DirectKeyDashboard.Views.Charting
                 if (projectedData.Any()) {
                     var datum = summary.Summarize(projectedData);
                     vertices.Add(new Vertex(datum));
+                } else {
+                    vertices.Add(new Vertex(0));
                 }
             }
 
@@ -70,8 +71,8 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<TCriterion> filter, TimeSeries timeSeries, Projection<TProjection> projection) {
-            var lineChart = await ProjectChart(new LineChartContext(filter, timeSeries), projection, summary);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Filter<TPreCriterion> preFilter, Summary<TProjection, float> summary, Filter<TCriterion> filter, TimeSeries timeSeries, Projection<TProjection> projection) {
+            var lineChart = await ProjectChart(preFilter, new LineChartContext(filter, timeSeries), projection, summary);
             return await Task.Run(() => View(lineChart));
         }
 

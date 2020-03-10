@@ -78,6 +78,7 @@ namespace DirectKeyDashboard.Views.Charting
                 DrilldownAction = drilldownAction,
                 DrilldownQueryParameters = new {
                     summary, // Summarize drilldown data in the same way
+                    preFilter = ctx.Filter,
                     filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>(new List<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>() { // Match data with the same category / key as this bar
                         new ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>(new CategoryProjection<TProjection, TGroupedProjection>(projection), s.Key)
                     }),

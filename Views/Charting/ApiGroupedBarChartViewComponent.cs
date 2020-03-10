@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
@@ -13,13 +15,15 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the GropuedProjection model, and summarized
     // by the Summary model.
-    public class ApiGroupedBarChartViewComponent<TProjection, TCriterion> : GroupedBarChartViewComponent
-            where TCriterion : Criterion {
+    public class ApiGroupedBarChartViewComponent<TProjection, TSummary, TCriterion, TCompositeProjection> : GroupedBarChartViewComponent
+            where TSummary : Summary<TProjection, float>
+            where TCriterion : Criterion
+            where TCompositeProjection : CompositeGroupedProjection<TProjection> {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiGroupedBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<TCriterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<TCriterion> filter, TimeInterval timeInterval, TCompositeProjection projection, TSummary summary, string drilldownAction, string drilldownController) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -97,11 +101,34 @@ namespace DirectKeyDashboard.Views.Charting
             // guide for inner key ordering. Note: Select() preserves ordering, so using
             // subLabels.Select() will allow a projection of values preserving
             // the inner ordering.
+            var drilldownActions = subLabels.Select(subLabel => drilldownAction).ToList();
+            var drilldownControllers = subLabels.Select(subLabel => drilldownController).ToList();
             var barGroups = summaryValues.Select(kvp => new BarGroup() {
                 Label = kvp.Key,
                 BackgroundColor = $"hsla({PostIncHue(ref backgroundHue, hueIncrement)}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})",
                 BorderColor = $"hsla({PostIncHue(ref borderHue, hueIncrement)}, {BarGroup.BorderSaturation}, {BarGroup.BorderLightness}, {BarGroup.BorderAlpha})",
-                Values = subLabels.Select(label => (int) kvp.Value[label]).ToList()
+                Values = subLabels.Select(label => (int) kvp.Value[label]).ToList(),
+                DrilldownActions = drilldownActions,
+                DrilldownControllers = drilldownControllers,
+                DrilldownQueryParameters = subLabels.Select(subLabel => (object) new {
+                    preFilter = filter,
+                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>>(
+                        new List<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>>() {
+                            new ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>(
+                                new CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>(projection),
+                                kvp.Key
+                            )
+                        }
+                    ), // Drilldown data should match the same dataset (filter)
+                    summary,
+                    timeSeries = new TimeSeries(new List<TimeInterval>() {
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                    }),
+                    projection = new CompositeValueProjection<TProjection, TCompositeProjection>(projection, subLabel)
+                }).ToList()
             }).ToList();
 
             return new GroupedBarChart() {
@@ -110,9 +137,9 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<TCriterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, bool pivot = false) {
-            var barChart = await ProjectChart(filter, timeInterval, projection, summary);
-            return await Task.Run(() => View(pivot ? barChart.Pivot() : barChart));
+        public virtual async Task<IViewComponentResult> InvokeAsync(TSummary summary, Filter<TCriterion> filter, TimeInterval timeInterval, TCompositeProjection projection, string drilldownAction, string drilldownController, bool pivot = false) {
+            var barChart = await ProjectChart(filter, timeInterval, projection, summary, drilldownAction, drilldownController);
+            return View(pivot ? barChart.Pivot() : barChart);
         }
     }
 }

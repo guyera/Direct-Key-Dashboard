@@ -28,6 +28,8 @@
                 "OperationTotalDurationMs",
                 "OperationDurationMs"
             }),
+            drilldownAction = "FloatProjectingApiLineChart",
+            drilldownController = "Charting",
             pivot = true // Pivot this chart to compare by duration types rather than operation type
         })
 
@@ -37,6 +39,8 @@
             filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.NotEqual)
             }),
+            drilldownAction = "FloatProjectingApiLineChart",
+            drilldownController = "Charting",
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
             projection = new SimpleCompositeGroupedProjection<float>("OperationDescription", new List<string>() {
                 "OperationUserIntentDurationMs",

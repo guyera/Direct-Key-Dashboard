@@ -45,6 +45,28 @@ for (var i = 0; i < numGroups; i++) { // For each dataset
     });
 }
 
+var handleClick = (function(jsId, ctx, numGroups) {
+    return function handleClick(evt, activeElements) {
+        if (activeElements != null && activeElements != undefined && activeElements[0] != null &&
+            activeElements[0] != undefined) {
+                var elem = this.getElementAtEvent(evt)[0];
+                var dataCount = window['groupedBarChartData'][jsId].values.length / numGroups;
+                console.log("Label: " + window['groupedBarChartData'][jsId].labels[elem.index]);
+                var absIndex = elem.datasetIndex * dataCount + elem.index;
+                console.log("Value: " + window['groupedBarChartData'][jsId].values[absIndex]);
+                var tempChart = $(document.createElement('div'));
+                ctx.parent().append(tempChart);
+
+                console.log(window['groupedBarChartData'][jsId].drilldownUris[absIndex]);
+                console.log(window['groupedBarChartData'][jsId].drilldownData[absIndex]);
+                
+                tempChart.load(window['groupedBarChartData'][jsId].drilldownUris[absIndex], window['groupedBarChartData'][jsId].drilldownData[absIndex]);
+            } else {
+                console.log("Did not click on bar.");
+            }
+        }
+})(jsId, ctx, numGroups); // evaulate jsId IMMEDIATELY and permanently localize it to the returned function
+
 var chart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -58,6 +80,7 @@ var chart = new Chart(ctx, {
                     beginAtZero: true
                 }
             }]
-        }
+        },
+        onClick: handleClick
     }
 });

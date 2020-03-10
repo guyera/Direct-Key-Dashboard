@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 namespace DirectKeyDashboard.Charting.Domain {
     public class SimpleCompositeGroupedProjection<TProjection> : CompositeGroupedProjection<TProjection>
     {
-        private string DatasetKeyToken;
-        private IList<string> CategoryKeyTokens;
+        public string DatasetKeyToken {get; set;}
+        public IList<string> CategoryKeyTokens {get; set;}
+
+        // For model binding
+        public SimpleCompositeGroupedProjection(){}
         public SimpleCompositeGroupedProjection(string datasetKeyToken, IList<string> categoryKeyTokens) {
             DatasetKeyToken = datasetKeyToken;
             CategoryKeyTokens = categoryKeyTokens;

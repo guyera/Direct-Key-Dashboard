@@ -39,23 +39,35 @@ namespace DirectKeyDashboard.Controllers
             return View();
         }
 
-        public IActionResult FloatProjectingApiLineChart() {
+        // public IActionResult FloatProjectingApiLineChart() {
+        //     return ViewComponent(typeof(FloatProjectingApiLineChartViewComponent), new {
+        //         summary = new AverageSummary(),
+        //         timeSeries = new TimeSeries(new List<TimeInterval>() {
+        //             new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+        //             new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+        //             new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+        //             new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+        //         }),
+        //         projection = new SimpleProjection<float>("OperationDurationMs")
+        //     });
+        // }
+
+        [HttpPost]
+        public IActionResult FloatProjectingApiLineChart(AverageSummary summary, Filter<FloatCriterion> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<IDictionary<string, float>, SimpleCompositeGroupedProjection<float>>>> filter, TimeSeries timeSeries, CompositeValueProjection<float, SimpleCompositeGroupedProjection<float>> projection) {
             return ViewComponent(typeof(FloatProjectingApiLineChartViewComponent), new {
-                summary = new AverageSummary(),
-                timeSeries = new TimeSeries(new List<TimeInterval>() {
-                    new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                    new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                    new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                    new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
-                }),
-                projection = new SimpleProjection<float>("OperationDurationMs")
+                summary,
+                preFilter,
+                filter,
+                timeSeries,
+                projection
             });
         }
 
         [HttpPost]
-        public IActionResult StringProjectingApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
+        public IActionResult StringProjectingApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
             return ViewComponent(typeof(StringProjectingApiLineChartViewComponent), new {
                 summary,
+                preFilter,
                 filter,
                 timeSeries,
                 projection

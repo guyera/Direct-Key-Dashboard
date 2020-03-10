@@ -9,9 +9,12 @@ namespace DirectKeyDashboard.Charting.Domain {
     // else it may be filtered out.
     public class FloatCriterion : Criterion {
         private const float Precision = 0.01f;
-        private string Key {get;}
-        private float Value {get;}
-        private Relation ValueRelation {get;}
+        public string Key {get; set;}
+        public float Value {get; set;}
+        public Relation ValueRelation {get; set;}
+
+        // For model binding
+        public FloatCriterion(){}
 
         public FloatCriterion(string key, float value, Relation valueRelation) {
             Key = key;

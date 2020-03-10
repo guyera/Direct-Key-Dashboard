@@ -24,6 +24,7 @@ namespace DirectKeyDashboard
             // Configure DKApiAccess singleton for dependency
             // injection
             services.AddSingleton<DKApiAccess>();
+            services.AddSingleton<Storage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

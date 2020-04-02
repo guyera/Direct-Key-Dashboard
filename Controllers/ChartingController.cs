@@ -64,7 +64,7 @@ namespace DirectKeyDashboard.Controllers
         }
 
         [HttpPost]
-        public IActionResult StringProjectingApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
+        public IActionResult StringProjectingApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, SimpleProjection<string>>> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
             return ViewComponent(typeof(StringProjectingApiLineChartViewComponent), new {
                 summary,
                 preFilter,

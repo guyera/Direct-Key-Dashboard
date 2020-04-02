@@ -7,8 +7,11 @@ namespace DirectKeyDashboard.Charting.Domain {
     // value pulled from a token with
     // the specified key
     public class SimpleProjection<T> : Projection<T> {
-        private readonly string TokenKey;
+        public string TokenKey {get; set;}
         
+        // For model binding
+        public SimpleProjection(){}
+
         public SimpleProjection(string tokenKey) {
             TokenKey = tokenKey;
         }

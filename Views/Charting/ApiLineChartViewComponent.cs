@@ -35,6 +35,16 @@ namespace DirectKeyDashboard.Views.Charting
                 // Convert data array token to JEnumerable and
                 // filter out unwanted data
                 var dataArray = dataArrayToken.AsJEnumerable();
+                if (summary == null)
+                    Console.WriteLine("Summary is null");
+                if (preFilter == null)
+                    Console.WriteLine("Prefilter is null");
+                else if (preFilter.Criteria == null)
+                    Console.WriteLine("Prefilter criteria is null");
+                if (ctx.Filter == null)
+                    Console.WriteLine("Filter is null");
+                else if (ctx.Filter.Criteria == null)
+                    Console.WriteLine("Filter criteria is null");
                 dataArray = preFilter.FilterData(dataArray);
                 dataArray = ctx.Filter.FilterData(dataArray);
 

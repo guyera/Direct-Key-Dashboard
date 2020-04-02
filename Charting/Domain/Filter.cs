@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -19,6 +20,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         }
 
         public IJEnumerable<JToken> FilterData(IJEnumerable<JToken> data) {
+            if (Criteria == null)
+                return data;
             return data.Where(d => d is JObject j && Criteria.All(c => c.SatisfiedBy(j))).AsJEnumerable();
         }
     }

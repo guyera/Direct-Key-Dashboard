@@ -24,7 +24,7 @@
 
         <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
         <h4 style="margin-top: 20px">Comparison of Duration Types</h4>
-        @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
+        @await Component.InvokeAsync(typeof(FloatAverageApiGroupedBarChartViewComponent), new {
             summary = new AverageSummary(),
             filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
@@ -41,7 +41,7 @@
         })
 
         <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
-        @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
+        @await Component.InvokeAsync(typeof(FloatAverageApiGroupedBarChartViewComponent), new {
             summary = new AverageSummary(),
             filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
                 new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)

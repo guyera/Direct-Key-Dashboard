@@ -1,4 +1,6 @@
-﻿@using DirectKeyDashboard.Views.Charting
+﻿@model List<CustomBarChart>
+
+@using DirectKeyDashboard.Views.Charting
 @using DirectKeyDashboard.Charting.Domain
 @using System.Globalization
 
@@ -7,23 +9,10 @@
 }
 
 <div class="text-center">
-    <div id="dynamic-chart-container" style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
-        <h4 style="margin-top: 20px">Comparison of Duration Types</h4>
-        @await Component.InvokeAsync(typeof(FloatProjectingApiGroupedBarChartViewComponent), new {
-            summary = new AverageSummary(),
-            filter = new Filter<FloatCriterion>(new List<FloatCriterion>(){
-                new FloatCriterion("OperationUserIntentDurationMs", 0.0f, FloatCriterion.Relation.Equal)
-            }),
-            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
-            projection = new SimpleCompositeGroupedProjection<float>("OperationDescription", new List<string>() {
-                "OperationCommDurationMs",
-                "OperationConnectDurationMs",
-                "OperationDurationMs"
-            }),
-            drilldownAction = "FloatProjectingApiLineChart",
-            drilldownController = "Charting",
-            pivot = false // Pivot this chart to compare by duration types rather than operation type
-        })
-    </div>
+    @{
+        foreach (var customBarChart in Model) {
+            var url = Url.Action("CustomBarChartView", "Charting", new { id = customBarChart.Id });
+            <a href="@Html.Raw(url)">customBarChart.Name</a>
+        }
+    }
 </div>

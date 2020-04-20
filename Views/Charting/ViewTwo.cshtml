@@ -15,14 +15,14 @@
         @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
 
         <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(StringProjectingApiBarChartViewComponent), new {
+        @await Component.InvokeAsync(typeof(StringCountApiBarChartViewComponent), new {
             summary = new CountSummary<string>(),
             //filter = new Filter<ProjectionCriterion<string, SimpleProjection<string>>>(new List<ProjectionCriterion<string, SimpleProjection<string>>>()),
             filter = new Filter<ProjectionCriterion<string, SimpleProjection<string>>>(new List<ProjectionCriterion<string, SimpleProjection<string>>>()),
             timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
             projection = new SimpleGroupedProjection<string>("OperationDescription", "OperationDescription"),
             drilldownController = "Charting",
-            drilldownAction = "StringProjectingApiLineChart"
+            drilldownAction = "StringCountApiLineChart"
         })
         
     </div>

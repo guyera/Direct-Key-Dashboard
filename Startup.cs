@@ -1,3 +1,4 @@
+using DirectKeyDashboard.Data;
 using InformationLibraries;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,8 @@ namespace DirectKeyDashboard
             // injection
             services.AddSingleton<DKApiAccess>();
             services.AddSingleton<Storage>();
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddDbContext<ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

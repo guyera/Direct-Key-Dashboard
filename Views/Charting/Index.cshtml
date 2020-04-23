@@ -1,4 +1,6 @@
-﻿@using DirectKeyDashboard.Views.Charting
+﻿@model List<CustomBarChart>
+
+@using DirectKeyDashboard.Views.Charting
 @using DirectKeyDashboard.Charting.Domain
 @using System.Globalization
 
@@ -7,43 +9,10 @@
 }
 
 <div class="text-center">
-    <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
-        @await Component.InvokeAsync(typeof(ApiLineChartViewComponent), new {
-            summary = new AverageSummary(),
-            filter = new Filter(new List<Criterion>()),
-            timeSeries = new TimeSeries(new List<TimeInterval>() {
-                    new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                    new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                    new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                    new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
-            }),
-            projection = new SimpleProjection("OperationDurationMs")
-        })
-
-        @await Component.InvokeAsync(typeof(DeviceCountsViewComponent))
-
-        @await Component.InvokeAsync(typeof(KeyCountsViewComponent))
-
-        @*
-        
-        <h3>Operation Instances</h3>
-        <h4>Proportion of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
-        <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
-        @await Component.InvokeAsync(typeof(OperationCountsViewComponent))
-
-        <h3 style="margin-top: 50px">Non-quick Connect Operation Times</h3>
-        <h4>Comparison of Duration Types</h4>
-        @await Component.InvokeAsync(typeof(OperationTimingsViewComponent))
-        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
-        @await Component.InvokeAsync(typeof(OperationTimingsPivotedViewComponent))
-
-        <h3 style="margin-top: 50px">Quick Connect Operation Times</h3>
-        <h4>Comparison of Duration Types</h4>
-        @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsViewComponent))
-        <h4 style="margin-top: 20px">Comparison of Operation Types</h4>
-        @await Component.InvokeAsync(typeof(QuickConnectOperationTimingsPivotedViewComponent))
-
-        *@
-    </div>
+    @{
+        foreach (var customBarChart in Model) {
+            var url = Url.Action("CustomBarChartView", "Charting", new { id = customBarChart.Id });
+            <a href="@Html.Raw(url)">customBarChart.Name</a>
+        }
+    }
 </div>

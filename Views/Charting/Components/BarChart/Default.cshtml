@@ -4,10 +4,6 @@
     var id = Guid.NewGuid().ToString();
     var jsId = id.Replace("-", "");
     var canvasID = $"bar-chart-canvas-{id}";
-    var labelsGlobal = $"barLabels_{jsId}";
-    var valuesGlobal = $"barValues_{jsId}";
-    var backgroundColorsGlobal = $"barBackgroundColors_{jsId}";
-    var borderColorsGlobal = $"barBorderColors_{jsId}";
 }
 
 <div class="chart-container" style="position:relative; width:60vw; margin-left:auto; margin-right:auto">
@@ -20,17 +16,27 @@
     if (window['barChartScriptIds'] == null) {
         window['barChartScriptIds'] = [];
     }
+    // Add this chart generation script to the queue so
+    // that it can find itself and the attributes we're
+    // about to pass in
     window['barChartScriptIds'].push('@Html.Raw(id)');
-    @(Html.Raw(labelsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Label).ToList()))');
-    @(Html.Raw(valuesGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Value).ToList()))');
-    @(Html.Raw(backgroundColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BackgroundColor).ToList()))');
-    @(Html.Raw(borderColorsGlobal)) = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BorderColor).ToList()))');
+    
+    if (window['barChartData'] == null) {
+        window['barChartData'] = {};
+    }
+
+    // Add this chart's data to the window's global
+    window['barChartData']['@Html.Raw(jsId)'] = {
+        labels: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Label).ToList()))'),
+        values: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.Value).ToList()))'),
+        backgroundColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BackgroundColor).ToList()))'),
+        borderColors: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.BorderColor).ToList()))'),
+        drilldownUris: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => Url.Action(b.DrilldownAction, b.DrilldownController)).ToList()))'),
+        drilldownData: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Bars.Select(b => b.DrilldownQueryParameters).ToList()))')
+    };
 </script>
 
 <script defer src="~/js/bar-chart.js" id="@Html.Raw(id)" data-canvas-id="@Html.Raw(canvasID)"
                                                   data-chart-label="@Html.Raw(Model.Label)"
                                                   data-bar-border-width="1"
-                                                  data-labels-global="@Html.Raw(labelsGlobal)"
-                                                  data-values-global="@Html.Raw(valuesGlobal)"
-                                                  data-background-colors-global="@Html.Raw(backgroundColorsGlobal)"
-                                                  data-border-colors-global="@Html.Raw(borderColorsGlobal)"></script>
+                                                  data-js-id="@Html.Raw(jsId)"></script>

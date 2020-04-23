@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 
 // using System.Globalization;
 
@@ -108,7 +109,7 @@ namespace InformationLibraries {
               dateTimeFormatInfo.DateSeparator = ":";
             */
 
-            var response = await Client.GetAsync(startpath + timeStart + endpath + timeEnd + $"&takes={amount}");
+            var response = await Client.GetAsync(startpath + HttpUtility.UrlEncode(timeStart.ToString()) + endpath + HttpUtility.UrlEncode(timeEnd.ToString()) + $"&takes={amount}");
             // pull this many entries with this specific query from time this to this
             return await response.Content.ReadAsStringAsync();
         }

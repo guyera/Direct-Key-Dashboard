@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectKeyDashboard.Charting.Domain;
 using InformationLibraries;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Util;
 
@@ -15,23 +18,23 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public QuickConnectOperationTimingsPivotedViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected override async Task<GroupedBarChart> ProjectChart() {
+        protected async Task<GroupedBarChart> ProjectChart() {
             // Eventually, attempt to pull the bar chart
             // itself straight from the cache so that the
             // full data doesn't need to be retrieved and
             // the bar chart reprojected on, for example,
             // page refresh. For now, pull the data every
             // time.
-            string rawData = await apiAccess.PullKeyDeviceActivity();
+            string rawData = await apiAccess.PullKeyDeviceActivity(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2020-02-01", "yyyy-MM-dd", CultureInfo.InvariantCulture));
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
             serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             var apiDataModel = JsonConvert.DeserializeObject<ApiDataModel>(rawData, serializerSettings);
-            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0).GroupBy(m => m.OperationCode);
+            var groups = apiDataModel.Data.Where(d => d.OperationUserIntentDurationMs != 0 && d.OperationUserIntentDurationMs.HasValue && d.OperationTotalDurationMs.HasValue && d.OperationUserIntentDurationMs.HasValue).GroupBy(m => m.OperationCode);
             var averageUserIntentTimes = new Dictionary<string, int>(
                 groups.Select(
                     g => new KeyValuePair<string, int>(
-                        g.First().OperationCode,
+                        g.First()?.OperationCode ?? "Test",
                         (int) g.Select(d => d.OperationUserIntentDurationMs).Average())).ToList());
             var averageTotalTimes = new Dictionary<string, int>(
                 groups.Select(
@@ -80,9 +83,9 @@ namespace DirectKeyDashboard.Views.Charting
             var hueBackground = 0; // Start at zero degrees / red
 
             // Increment 1/n of the color wheel each iteration
-            var hueIncrement = 360 / groups.Count();
+            var hueIncrement = groups.Count() == 0 ? 0 : 360 / groups.Count();
 
-            // Use the postIncHue function to get the original value of the hue
+            // Use the PostIncHue function to get the original value of the hue
             // while simultaneously updating it to a new value by incrementation.
             // Note that LINQ uses lazy evaluation, so it will compute the
             // enumerable as they are iterated the first time, resulting in the bacgkround
@@ -93,13 +96,13 @@ namespace DirectKeyDashboard.Views.Charting
             // that increment separately.
             var backgroundColors = new Dictionary<string, string>();
             foreach (var group in groups) {
-                backgroundColors.Add(group.First().OperationCode, $"hsla({postIncHue(ref hueBackground, hueIncrement)}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})");
+                backgroundColors.Add(group.First().OperationCode, $"hsla({PostIncHue(ref hueBackground, hueIncrement)}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})");
             }
 
             var hueBorder = 0; // Reset hue for border colors
             var borderColors = new Dictionary<string, string>();
             foreach (var group in groups) {
-                borderColors.Add(group.First().OperationCode, $"hsla({postIncHue(ref hueBorder, hueIncrement)}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})");
+                borderColors.Add(group.First().OperationCode, $"hsla({PostIncHue(ref hueBorder, hueIncrement)}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})");
             }
 
             // Construct list of bar groups
@@ -115,6 +118,11 @@ namespace DirectKeyDashboard.Views.Charting
                 BarGroups = barGroups.ToList(),
                 Labels = labels
             };
+        }
+
+        public async Task<IViewComponentResult> InvokeAsync() {
+            var groupedBarChart = await ProjectChart();
+            return await Task.Run(() => View(groupedBarChart));
         }
 
         private class ApiDataModel {

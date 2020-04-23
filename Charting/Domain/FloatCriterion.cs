@@ -8,18 +8,22 @@ namespace DirectKeyDashboard.Charting.Domain {
     // range specified by this criterion,
     // else it may be filtered out.
     public class FloatCriterion : Criterion {
-        private const double Precision = 0.001D;
+        private const float Precision = 0.01f;
+        public string Key {get; set;}
+        public float Value {get; set;}
+        public Relation ValueRelation {get; set;}
 
-        private float Value {get;}
-        private Relation ValueRelation {get;}
+        // For model binding
+        public FloatCriterion(){}
 
-        public FloatCriterion(string key, float value, Relation valueRelation) : base(key) {
-            this.Value = value;
-            this.ValueRelation = valueRelation;
+        public FloatCriterion(string key, float value, Relation valueRelation) {
+            Key = key;
+            Value = value;
+            ValueRelation = valueRelation;
         }
 
         public override bool SatisfiedBy(JObject jobject) {
-            if (!jobject.TryGetValue(Key, out var token) || token.Type != JTokenType.Float) {
+            if (!jobject.TryGetValue(Key, out var token)) {
                 return false;
             }
 
@@ -31,6 +35,8 @@ namespace DirectKeyDashboard.Charting.Domain {
             switch(ValueRelation) {
                 case Relation.Equal:
                     return Math.Abs(value.Value - Value) <= Precision;
+                case Relation.NotEqual:
+                    return Math.Abs(value.Value - Value) > Precision;
                 case Relation.Greater:
                     return value > Value;
                 case Relation.GreaterOrEqual:
@@ -46,6 +52,7 @@ namespace DirectKeyDashboard.Charting.Domain {
 
         public enum Relation{
             Equal,
+            NotEqual,
             Greater,
             Less,
             GreaterOrEqual,

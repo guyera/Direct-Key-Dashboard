@@ -16,17 +16,10 @@ namespace DirectKeyDashboard.Views.Charting
             this.apiAccess = apiAccess;
         }
 
-        protected static int postIncHue(ref int hue, int hueIncrement) {
+        protected static int PostIncHue(ref int hue, int hueIncrement) {
             int res = hue; // Store existing hue value
             hue += hueIncrement; // Increment hue
             return res; // Return original hue value
-        }
-
-        protected abstract Task<GroupedBarChart> ProjectChart();
-
-        public virtual async Task<IViewComponentResult> InvokeAsync() {
-            var groupedBarChart = await ProjectChart();
-            return await Task.Run(() => View(groupedBarChart));
         }
     }
 }

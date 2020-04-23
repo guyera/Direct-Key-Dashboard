@@ -1,10 +1,11 @@
-// A model for a full bar chart to be displayed via a
+// A model for a full grouped bar chart to be displayed via a
 // ViewComponent
 
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DirectKeyDashboard.Charting.Domain {
+namespace DirectKeyDashboard.Charting.Domain
+{
     public class GroupedBarChart {
         // A list of bar groups / datasets used to
         // store the values across various sample points
@@ -12,10 +13,37 @@ namespace DirectKeyDashboard.Charting.Domain {
         public IList<BarGroup> BarGroups {get; set;}
         
         // Labels for each sample point. Note that these
-        // are NOT the labels for the categories. Each
-        // sample will have a data point from eah category.
-        // The categories are color coded and labelled in the
+        // are NOT the labels for the datasets. Each
+        // sample will have a data point from eah dataset.
+        // The datasets are color coded and labelled in the
         // legend.
         public IList<string> Labels {get; set;}
+
+        public GroupedBarChart Pivot() {
+            var tempLabels = BarGroups.Select(bg => bg.Label).ToList();
+            var tempBarGroups = new List<BarGroup>();
+            var backgroundHue = 0;
+            var borderHue = 0;
+            var hueInc = Labels.Count() == 0 ? 0 : 360 / Labels.Count();
+            for (var i = 0; i < Labels.Count(); i++) {
+                var barGroup = new BarGroup() {
+                    Label = Labels[i],
+                    Values = BarGroups.Select(bg => bg.Values.Count() > i ? bg.Values[i] : 0).ToList(),
+                    BackgroundColor = $"hsla({backgroundHue}, {BarGroup.BackgroundSaturation}, {BarGroup.BackgroundLightness}, {BarGroup.BackgroundAlpha})",
+                    BorderColor = $"hsla({borderHue}, {BarGroup.BorderSaturation}, {BarGroup.BorderLightness}, {BarGroup.BorderAlpha})",
+                    DrilldownActions = BarGroups.Select(bg => bg.DrilldownActions.Count() > i ? bg.DrilldownActions[i] : bg.DrilldownActions.First()).ToList(),
+                    DrilldownControllers = BarGroups.Select(bg => bg.DrilldownControllers.Count() > i ? bg.DrilldownControllers[i] : bg.DrilldownControllers.First()).ToList(),
+                    DrilldownQueryParameters = BarGroups.Select(bg => bg.DrilldownQueryParameters.Count() > i ? bg.DrilldownQueryParameters[i] : new object{}).ToList(),
+                };
+                backgroundHue += hueInc;
+                borderHue += hueInc;
+                tempBarGroups.Add(barGroup);
+            }
+
+            return new GroupedBarChart() {
+                BarGroups = tempBarGroups,
+                Labels = tempLabels
+            };
+        }
     }
 }

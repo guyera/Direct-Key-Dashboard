@@ -14,6 +14,9 @@ namespace DirectKeyDashboard.Charting.Domain {
 
         // List of values within this category
         public IList<int> Values {get; set;}
+        public IList<string> DrilldownActions {get; set;}
+        public IList<string> DrilldownControllers {get; set;}
+        public IList<object> DrilldownQueryParameters {get; set;}
 
         // Label for display
         public string Label {get; set;}

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace DirectKeyDashboard.Charting.Domain {
+namespace DirectKeyDashboard.Charting.Domain
+{
     // CustomBarChart represents a custom-built single-
     // grouped bar chart. 
     public class CustomGroupedBarChart {
@@ -25,6 +25,12 @@ namespace DirectKeyDashboard.Charting.Domain {
         // such as a count vs an average
         public SummaryMethod SummaryMethod {get; set;}
 
+        // TODO Remove CriterionType, and allow filters to accept
+        // criteria polymorphically. It will lead to some difficulties
+        // when serializing drilldown charts that have polymorphic
+        // members, but it is certainly possible to serialize
+        // polymorphic objects, so why not?
+
         // CriterionType represents the type of criterion used
         // to filter out unwanted datapoints. ProjectionCriteria
         // are simple criteria which just check to see if
@@ -39,14 +45,9 @@ namespace DirectKeyDashboard.Charting.Domain {
         // ms == 0).
         public CriterionType CriterionType {get; set;}
 
-        // This gets a little messy. Since there's no easy way to represent
-        // generic types in relational databases, each custom bar chart
-        // can have many FloatCriteria and ProjectionCriterionModels
-        // associated with it. However, there should only be one or the other;
-        // there should be be both types of criteria associated with the
-        // custom bar chart. The type of criteria which does exist (if any)
-        // should match the CriterionType field.
-        public IList<CustomBarChartFloatCriterion> FloatCriteria {get; set;}
+        // This represents the floating point / number criteria associated
+        // with this chart (e.g. only project data with a DurationMs property greater than 0)
+        public IList<CustomGroupedBarChartFloatCriterion> FloatCriteria {get; set;}
         
 
         // Start and end times for the window of data to be projected
@@ -65,16 +66,30 @@ namespace DirectKeyDashboard.Charting.Domain {
         // It should be a string (for count summaries only),
         // or it should be a number (for numerical summaries,
         // like average).
-        public List<string> ValueTokenKeys {get; set;}
+        public List<CustomGroupedBarChartValueTokenKeys> ValueTokenKeys {get; set;}
 
+        // Pivoting a grouped bar chart refers to switching the x
+        // axis with the sub-groupings. Normally, the X-axis
+        // labels represent the sub-dataset category, and the
+        // legend / color coding of the bars represents the
+        // super dataset. Setting pivot to true will invert
+        // these two by default.
         public bool Pivot {get; set;}
 
         public CustomGroupedBarChart() {}
 
-        public class CustomBarChartFloatCriterion {
+        public class CustomGroupedBarChartValueTokenKeys {
             public Guid Id {get; set;}
-            public Guid CustomBarChartId {get; set;}
-            public CustomBarChart CustomBarChart {get; set;}
+            public Guid CustomGroupedBarChartId {get; set;}
+            public CustomGroupedBarChart CustomGroupedBarChart {get; set;}
+            public string Key {get; set;}
+        }
+
+        // TODO extend this from the existing FloatCriterion class, if possible
+        public class CustomGroupedBarChartFloatCriterion {
+            public Guid Id {get; set;}
+            public Guid CustomGroupedBarChartId {get; set;}
+            public CustomGroupedBarChart CustomGroupedBarChart {get; set;}
 
             // Token key of this float JSON property
             public string Key {get; set;}

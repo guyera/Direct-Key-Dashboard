@@ -9,6 +9,22 @@ using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
+/* TODO Reduce the generics used and increase polymorphism in its place.
+    e.g. instead of requiring TSummary as a generic type parameter,
+    simply accept Summary<TProjection, float> as an invocation argument. 
+    The only reason to use generics and generic type constraints enforcing
+    inheritance is to allow more flexibility with the type. e.g. IList<Dog>
+    is not substitutable for IList<Animal> (though covariance IS allowed with
+    classes, just not interfaces), or to guarantee that types match in certain
+    locations (e.g. the summary takes as an argument a list of the same type which the
+    projection produces). However, I do not need such flexibility, nor do I need
+    such constraints with summaries, projections, or criteria. The only
+    real case for generics here is TProjection (which should probably
+    be named to TProjectionValue, as it represents the type of the thing
+    which is projected, not the type of the projection itself), for the
+    reason mentioned (summary must be able to summarize the type of thing
+    which was projected)  */
+
 namespace DirectKeyDashboard.Views.Charting
 {
     // Represents a bar chart which projects data from the API.

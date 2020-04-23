@@ -12,7 +12,11 @@ namespace DirectKeyDashboard.Data {
 
         // public DbSet<SomeEntityType> Entities {get; set;}
         public DbSet<CustomBarChart> CustomBarCharts {get; set;}
+
+        public DbSet<CustomGroupedBarChart> CustomGroupedBarCharts {get; set;}
         public DbSet<CustomBarChart.CustomBarChartFloatCriterion> BarChartFloatCriteria {get; set;}
+        public DbSet<CustomGroupedBarChart.CustomGroupedBarChartFloatCriterion> GroupedBarChartFloatCriteria {get; set;}
+        public DbSet<CustomGroupedBarChart.CustomGroupedBarChartValueTokenKeys> GroupedBarChartValueTokenKeys {get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder) {
             builder.UseMySql(_connectionString);
@@ -21,6 +25,8 @@ namespace DirectKeyDashboard.Data {
         protected override void OnModelCreating(ModelBuilder builder) {
             // Change table properties, such as relationships, here
             builder.Entity<CustomBarChart>().HasMany(e => e.FloatCriteria).WithOne(e => e.CustomBarChart);
+            builder.Entity<CustomGroupedBarChart>().HasMany(e => e.FloatCriteria).WithOne(e => e.CustomGroupedBarChart);
+            builder.Entity<CustomGroupedBarChart>().HasMany(e => e.ValueTokenKeys).WithOne(e => e.CustomGroupedBarChart);
         }
     }
 }

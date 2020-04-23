@@ -22,7 +22,7 @@
                                         summary = new CountSummary<string>(),
                                         filter = new Filter<FloatCriterion>(Model.FloatCriteria.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
                                         timeInterval = new TimeInterval(Model.IntervalStart, Model.IntervalEnd, null),
-                                        projection = new SimpleCompositeGroupedProjection<string>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys),
+                                        projection = new SimpleCompositeGroupedProjection<string>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys.Select(vtk => vtk.Key).ToList()),
                                         drilldownAction = "StringCountApiLineChart",
                                         drilldownController = "Charting",
                                         pivot = Model.Pivot
@@ -39,7 +39,7 @@
                                         summary = new CountSummary<float>(),
                                         filter = new Filter<FloatCriterion>(Model.FloatCriteria.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
                                         timeInterval = new TimeInterval(Model.IntervalStart, Model.IntervalEnd, null),
-                                        projection = new SimpleCompositeGroupedProjection<float>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys),
+                                        projection = new SimpleCompositeGroupedProjection<float>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys.Select(vtk => vtk.Key).ToList()),
                                         drilldownAction = "FloatProjectingApiLineChart",
                                         drilldownController = "Charting",
                                         pivot = Model.Pivot
@@ -60,7 +60,7 @@
                                         summary = new AverageSummary(),
                                         filter = new Filter<FloatCriterion>(Model.FloatCriteria?.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList() ?? new List<FloatCriterion>()),
                                         timeInterval = new TimeInterval(Model.IntervalStart, Model.IntervalEnd, null),
-                                        projection = new SimpleCompositeGroupedProjection<float>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys),
+                                        projection = new SimpleCompositeGroupedProjection<float>(Model.SuperDatasetCategoryTokenKey, Model.ValueTokenKeys.Select(vtk => vtk.Key).ToList()),
                                         drilldownAction = "FloatProjectingApiLineChart",
                                         drilldownController = "Charting",
                                         pivot = Model.Pivot

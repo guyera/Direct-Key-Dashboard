@@ -1,0 +1,50 @@
+﻿@model CreateCustomViewModel
+
+@using DirectKeyDashboard.Views.Charting
+
+@{
+    ViewData["Title"] = "Charting Page";
+    var selectViewTypeId = "select-view-type";
+}
+
+<form asp-action="CreateCustomView" asp-controller="Charting" method="post">
+    <select class="selectpicker" onchange="model.selectViewType()" id="@selectViewTypeId">
+        <option value="none" selected disabled hidden>View type</option>
+        @foreach (var viewType in CreateCustomViewModel.ViewTypes) {
+            <option value="@viewType.Id">@viewType.Name</option>
+        }
+    </select>
+</form>
+
+<script type="text/javascript">
+    class CreateCustomViewModel {
+        constructor() {
+            this.viewTypeIdBar = "@CreateCustomViewModel.ViewType.TypeId.Bar";
+            this.viewTypeIdGroupedBar = "@CreateCustomViewModel.ViewType.TypeId.GroupedBar";
+        }
+        init() {
+            this.elemSelectViewType = $("#@selectViewTypeId");
+            this.selectViewType = function selectViewType() {
+                var selectedViewTypeId = this.elemSelectViewType.val();
+                if (selectedViewTypeId == this.viewTypeIdBar) {
+                    // Load view associated with bar charts
+                } else if (selectedViewTypeId == this.viewTypeIdGroupedBar) {
+                    // Load view associated with grouped bar charts
+                }
+            }
+        }
+    }
+    const model = new CreateCustomViewModel();
+    
+    // Init the model after window has loaded, so that we
+    // have access to jquery. Necessary for server-side rendering
+    // to be embedded into the page before jQuery and other
+    // libraries.
+    var prevOnload = window.onload;
+    window.onload = function() {
+        if (prevOnload) {
+            prevOnload();
+        }
+        model.init();
+    }
+</script>

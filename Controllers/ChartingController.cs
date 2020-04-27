@@ -43,6 +43,10 @@ namespace DirectKeyDashboard.Controllers
             }
             return View(_dbContext.CustomBarCharts.ToList());
         }
+        
+        public IActionResult CreateCustomView() {
+            return View();
+        }
 
         public IActionResult ViewOne() {
             return View();

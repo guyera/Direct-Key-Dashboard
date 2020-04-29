@@ -6,9 +6,9 @@ namespace DirectKeyDashboard.Charting.Domain {
     }
 
     // An enumeration of possible projection result types.
-    // Currently, only numbers and strings are supported.
+    // Currently, only numbers are supported.
     public enum ProjectionResult {
-        String,
-        Number
+        Number,
+        String
     }
 }

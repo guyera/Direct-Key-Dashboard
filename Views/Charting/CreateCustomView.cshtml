@@ -1,39 +1,110 @@
 ﻿@model CreateCustomViewModel
 
 @using DirectKeyDashboard.Views.Charting
+@using DirectKeyDashboard.Charting.Domain
 
 @{
     ViewData["Title"] = "Charting Page";
-    var selectViewTypeId = "select-view-type";
+    var viewTypeSelectId = "select-view-type";
+    var groupedBarViewId = "view-grouped-bar";
+    var barViewId = "view-bar";
+    var chartTitleInputId = "input-chart-title";
+    var chartViewGroupId = "chart-view-group";
+    var projectionResultTypeSelectId = "projection-result-type-select";
 }
 
-<form asp-action="CreateCustomView" asp-controller="Charting" method="post">
-    <select class="selectpicker" onchange="model.selectViewType()" id="@selectViewTypeId">
+@*TODO  Create NonProjectingApiGroupedBarCharts and NonProjectingApiLineCharts, and replace the string projecting
+        charts that have been projected thus far to use the NonProjecting charts (for counts), such as
+        the DeviceCounts chart, or the KeyCounts chart. Then, once certain that the NonProjecting charts
+        are working, get rid of StringProjecting charts entirely. Lastly, reduce generics in the projecting
+        bar charts and grouped charts and prefer polymorphism*@
+
+@*TODO  Only show projection result types when the summary type requires a projection. For instance,
+        count summaries do not require projections. They only require categorizers.*@
+
+@*TODO  InvervalStart, InvervalEnd*@
+
+@*TODO  List of FloatCriteria*@
+
+@*TODO  For bar charts, CategoryTokenKey and ValueTokenKey*@
+
+@*TODO  For grouped bar charts, SuperDatasetCategoryTokenKey and list of ValueTokenKeys*@
+
+<form class="form-group-container" asp-action="CreateCustomView" asp-controller="Charting" method="post">
+    @*Shared content between all views*@
+    
+    <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewTypeId">
         <option value="none" selected disabled hidden>View type</option>
         @foreach (var viewType in CreateCustomViewModel.ViewTypes) {
-            <option value="@viewType.Id">@viewType.Name</option>
+            <option value="@viewType.ViewType">@viewType.DisplayName</option>
         }
     </select>
+
+    <div class="form-group">
+        <label for="@chartTitleInputId" style="margin: 0px;">Chart Title</label>
+        <input type="text" class="form-control" id="@chartTitleInputId" placeholder="Chart Title" name="chartTitle" />
+    </div>
+
+    @*TODO  Summary method option select picker, which toggles a mutually exclusive group of views (e.g. only
+            show the ProjectionResultOption select picker when the summary requires a projection*@
+
+    <select class="selectpicker" id="@projectionResultTypeSelectId" onchange="model.selectProjectionResultType()" name="projectionResult">
+        <option value="none" selected disabled hidden>Projection result type</option>
+        @foreach (var projectionResultType in CreateCustomViewModel.ProjectionResultTypes) {
+            <option value="@projectionResultType.ProjectionResult">@projectionResultType.DisplayName</option>
+        }
+    </select>
+
+    @*Content associated with a specific chart view*@
+    <div class="mutually-exclusive-group" id="@chartViewGroupId">
+
+        @*Content associated with a grouped bar chart view*@
+        <div class="form-group-container mutually-exclusive-hidden" id="@groupedBarViewId">
+            EFGH
+        </div>
+
+        @*Content associated with a bar chart view*@
+        <div class="form-group-container mutually-exclusive-hidden" id="@barViewId">
+            ABCD
+        </div>
+    
+    </div>
 </form>
 
 <script type="text/javascript">
     class CreateCustomViewModel {
         constructor() {
-            this.viewTypeIdBar = "@CreateCustomViewModel.ViewType.TypeId.Bar";
-            this.viewTypeIdGroupedBar = "@CreateCustomViewModel.ViewType.TypeId.GroupedBar";
+            this.barView = "@CreateCustomViewModel.ViewType.Bar";
+            this.groupedBarView = "@CreateCustomViewModel.ViewType.GroupedBar";
         }
-        init() {
-            this.elemSelectViewType = $("#@selectViewTypeId");
+
+        initSelectViewType() {
             this.selectViewType = function selectViewType() {
-                var selectedViewTypeId = this.elemSelectViewType.val();
-                if (selectedViewTypeId == this.viewTypeIdBar) {
+                var selectedView = this.viewTypeSelectElem.val();
+                if (selectedView == this.barView) {
+
                     // Load view associated with bar charts
-                } else if (selectedViewTypeId == this.viewTypeIdGroupedBar) {
+                    $('#@chartViewGroupId').children().addClass('mutually-exclusive-hidden');
+                    $('#@barViewId').removeClass('mutually-exclusive-hidden');
+
+                } else if (selectedView == this.groupedBarView) {
+
                     // Load view associated with grouped bar charts
+                    $('#@chartViewGroupId').children().addClass('mutually-exclusive-hidden');
+                    $('#@groupedBarViewId').removeClass('mutually-exclusive-hidden');
+
                 }
             }
         }
+
+        init() {
+            this.viewTypeSelectElem = $('#@viewTypeSelectId');
+            this.projectionResultTypeSelectElem = $('#@projectionResultTypeSelectId');
+            this.initSelectViewType();
+            this.initSelectProjectionResultType();
+        }
     }
+
     const model = new CreateCustomViewModel();
     
     // Init the model after window has loaded, so that we

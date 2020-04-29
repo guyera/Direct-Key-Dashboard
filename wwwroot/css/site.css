@@ -88,3 +88,19 @@ body {
   align-items: center;
   flex: 5;
 }
+
+.form-group-container > *:first-child {
+  margin-top: 0px;
+}
+
+.form-group-container > * {
+  margin-top: 30px;
+}
+
+.mutually-exclusive-hidden {
+  display: none;
+}
+
+.mutually-exclusive-group > * {
+  position: absolute;
+}

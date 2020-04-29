@@ -1,24 +1,57 @@
-﻿namespace DirectKeyDashboard.Views.Charting {
+﻿using DirectKeyDashboard.Charting.Domain;
+
+namespace DirectKeyDashboard.Views.Charting {
     public class CreateCustomViewModel {
-        public static ViewType[] ViewTypes {get; set;} = {
-            new ViewType{
-                Name = "Bar Chart",
-                Id = ViewType.TypeId.Bar
+        public static ViewTypeOption[] ViewTypes {get; set;} = {
+            new ViewTypeOption{
+                DisplayName = "Bar Chart",
+                ViewType = ViewType.Bar
             },
-            new ViewType{
-                Name = "Grouped Bar Chart",
-                Id = ViewType.TypeId.GroupedBar
+            new ViewTypeOption{
+                DisplayName = "Grouped Bar Chart",
+                ViewType = ViewType.GroupedBar
             }
         };
 
-        public class ViewType {
-            public string Name {get; set;}
-            public TypeId Id {get; set;}
-
-            public enum TypeId {
-                Bar,
-                GroupedBar
+        public static SummaryMethodOption[] SummaryMethods {get; set;} = {
+            new SummaryMethodOption{
+                DisplayName = "Average",
+                RequiresProjection = true,
+                SummaryMethod = SummaryMethod.Average
+            },
+            new SummaryMethodOption{
+                DisplayName = "Count",
+                RequiresProjection = false,
+                SummaryMethod = SummaryMethod.Count
             }
+        };
+
+        public static ProjectionResultOption[] ProjectionResultTypes {get; set;} = {
+            new ProjectionResultOption{
+                DisplayName = "Number",
+                ProjectionResult = ProjectionResult.Number
+            }
+        };
+
+        public class ViewTypeOption {
+            public string DisplayName {get; set;}
+            public ViewType ViewType {get; set;}
+
+        }
+        public enum ViewType {
+            Bar,
+            GroupedBar
+        }
+
+        public class SummaryMethodOption {
+            public string DisplayName {get; set;}
+            public bool RequiresProjection {get; set;}
+            public SummaryMethod SummaryMethod;
+        }
+
+        public class ProjectionResultOption {
+            public string DisplayName {get; set;}
+            public ProjectionResult ProjectionResult {get; set;}
         }
     }
 }

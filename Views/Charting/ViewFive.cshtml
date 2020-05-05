@@ -1,0 +1,29 @@
+﻿@using DirectKeyDashboard.Views.Charting
+@using DirectKeyDashboard.Charting.Domain
+@using System.Globalization
+@using Newtonsoft.Json.Linq
+
+@{
+    ViewData["Title"] = "Charting Page";
+}
+
+<div class="text-center">
+    <div style="display: flex; flex-direction: column; width: 100%; align-items: center;">
+
+        <h3>Operation Instances</h3>
+        
+        <h4>Proportion of Operation Types Instantiated</h4>
+        @await Component.InvokeAsync(typeof(OperationProportionsViewComponent))
+
+        <h4 style="margin-top: 20px">Counts of Operation Types Instantiated</h4>
+        @await Component.InvokeAsync(typeof(NonProjectingApiBarChartViewComponent), new {
+            categorizer = new PropertyValueCategorizer("OperationDescription"),
+            summary = new CountSummary<JObject>(),
+            filter = new Filter<Criterion>(),
+            timeInterval = new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), null),
+            drilldownController = "Charting",
+            drilldownAction = "NonProjectingApiLineChart"
+        })
+        
+    </div>
+</div>

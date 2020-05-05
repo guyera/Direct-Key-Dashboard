@@ -10,6 +10,9 @@ using System.Linq;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+
+/* TODO Custom model binding for polymorphic types like summaries, projections, and filters */
 
 namespace DirectKeyDashboard.Controllers
 {
@@ -64,6 +67,10 @@ namespace DirectKeyDashboard.Controllers
             return View();
         }
 
+        public IActionResult ViewFive() {
+            return View();
+        }
+
         public async Task<IActionResult> CustomBarChartView(Guid id) {
             Console.WriteLine($"ID: {id}");
             var chart = await _dbContext.CustomBarCharts.FindAsync(id);
@@ -92,6 +99,16 @@ namespace DirectKeyDashboard.Controllers
                 filter,
                 timeSeries,
                 projection
+            });
+        }
+
+        [HttpPost]
+        public IActionResult NonProjectingApiLineChart(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<CategorizerCriterion> filter, TimeSeries timeSeries) {
+            return ViewComponent(typeof(NonProjectingApiLineChartViewComponent), new {
+                preFilter,
+                filter = new Filter<Criterion>(filter.Criteria),
+                summary,
+                timeSeries
             });
         }
 

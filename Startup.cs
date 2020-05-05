@@ -1,3 +1,4 @@
+using DirectKeyDashboard.Charting.Domain;
 using DirectKeyDashboard.Data;
 using InformationLibraries;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +29,10 @@ namespace DirectKeyDashboard
             services.AddSingleton<Storage>();
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddDbContext<ApplicationDbContext>();
+
+            services.AddControllers(options => {
+                options.ModelBinderProviders.Insert(0, new SummaryModelBinderProvider());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

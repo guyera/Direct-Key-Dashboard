@@ -1,6 +1,7 @@
 // A model for a full bar chart to be displayed via a
 // ViewComponent
 
+using System;
 using System.Collections.Generic;
 
 namespace DirectKeyDashboard.Charting.Domain {

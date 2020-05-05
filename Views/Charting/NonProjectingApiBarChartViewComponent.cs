@@ -14,12 +14,12 @@ namespace DirectKeyDashboard.Views.Charting
     // Bar chart which does not require a projection from each object,
     // but rather the JSON objects themselves are summarized (such as a count
     // of how many objects are returned after filtering, etc.)
-    public abstract class NonProjectingApiBarChartViewComponent : BarChartViewComponent {
+    public class NonProjectingApiBarChartViewComponent : BarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public NonProjectingApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(Categorizer categorizer, Filter<Criterion> filter, TimeInterval timeInterval, Summary<JObject, float> summary, string drilldownController, string drilldownAction) {
+        protected virtual async Task<BarChart> ProjectChart(PropertyValueCategorizer categorizer, Filter<Criterion> filter, TimeInterval timeInterval, Summary<JObject, float> summary, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -76,8 +76,8 @@ namespace DirectKeyDashboard.Views.Charting
                 DrilldownQueryParameters = new {
                     summary, // Summarize drilldown data in the same way
                     preFilter = filter,
-                    filter = new Filter<Criterion>() { // Match data with the same category / key as this bar
-                        Criteria = new List<Criterion>() {
+                    filter = new Filter<CategorizerCriterion>() { // Match data with the same category / key as this bar
+                        Criteria = new List<CategorizerCriterion>() {
                             new CategorizerCriterion(s.Key, categorizer)
                         }
                     },
@@ -96,7 +96,7 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Categorizer categorizer, Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, string drilldownController, string drilldownAction) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(PropertyValueCategorizer categorizer, Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, string drilldownController, string drilldownAction) {
             var barChart = await ProjectChart(categorizer, filter, timeInterval, summary, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
         }

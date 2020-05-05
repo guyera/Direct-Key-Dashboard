@@ -3,12 +3,12 @@ using Newtonsoft.Json.Linq;
 namespace DirectKeyDashboard.Charting.Domain {
     public class CategorizerCriterion : Criterion {
         public string DesiredCategory {get; set;}
-        public Categorizer Categorizer {get; set;}
+        public PropertyValueCategorizer Categorizer {get; set;}
 
         // For model binding
         public CategorizerCriterion(){}
 
-        public CategorizerCriterion(string desiredCategory, Categorizer categorizer) {
+        public CategorizerCriterion(string desiredCategory, PropertyValueCategorizer categorizer) {
             DesiredCategory = desiredCategory;
             Categorizer = categorizer;
         }

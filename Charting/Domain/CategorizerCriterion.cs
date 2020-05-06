@@ -6,9 +6,9 @@ namespace DirectKeyDashboard.Charting.Domain {
         public PropertyValueCategorizer Categorizer {get; set;}
 
         // For model binding
-        public CategorizerCriterion(){}
+        public CategorizerCriterion() : base(typeof(CategorizerCriterion).FullName) {}
 
-        public CategorizerCriterion(string desiredCategory, PropertyValueCategorizer categorizer) {
+        public CategorizerCriterion(string desiredCategory, PropertyValueCategorizer categorizer) : base(typeof(CategorizerCriterion).FullName) {
             DesiredCategory = desiredCategory;
             Categorizer = categorizer;
         }

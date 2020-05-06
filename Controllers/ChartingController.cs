@@ -92,7 +92,7 @@ namespace DirectKeyDashboard.Controllers
         }
 
         [HttpPost]
-        public IActionResult StringCountApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, SimpleProjection<string>>> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
+        public IActionResult StringCountApiLineChart(Summary<string, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries, Projection<string> projection) {
             return ViewComponent(typeof(StringCountApiLineChartViewComponent), new {
                 summary,
                 preFilter,
@@ -103,10 +103,10 @@ namespace DirectKeyDashboard.Controllers
         }
 
         [HttpPost]
-        public IActionResult NonProjectingApiLineChart(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<CategorizerCriterion> filter, TimeSeries timeSeries) {
+        public IActionResult NonProjectingApiLineChart(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries) {
             return ViewComponent(typeof(NonProjectingApiLineChartViewComponent), new {
                 preFilter,
-                filter = new Filter<Criterion>(filter.Criteria),
+                filter,
                 summary,
                 timeSeries
             });

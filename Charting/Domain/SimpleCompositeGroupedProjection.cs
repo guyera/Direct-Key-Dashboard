@@ -8,8 +8,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         public IList<string> CategoryKeyTokens {get; set;}
 
         // For model binding
-        public SimpleCompositeGroupedProjection(){}
-        public SimpleCompositeGroupedProjection(string datasetKeyToken, IList<string> categoryKeyTokens) {
+        public SimpleCompositeGroupedProjection() : base(typeof(SimpleCompositeGroupedProjection<TProjection>).FullName){}
+        public SimpleCompositeGroupedProjection(string datasetKeyToken, IList<string> categoryKeyTokens) : base(typeof(SimpleCompositeGroupedProjection<TProjection>).FullName) {
             DatasetKeyToken = datasetKeyToken;
             CategoryKeyTokens = categoryKeyTokens;
         }

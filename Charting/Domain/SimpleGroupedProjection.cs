@@ -12,8 +12,8 @@ namespace DirectKeyDashboard.Charting.Domain
         public string ValueTokenKey {get; set;}
         
         // For model binding
-        public SimpleGroupedProjection(){}
-        public SimpleGroupedProjection(string categoryTokenKey, string valueTokenKey) {
+        public SimpleGroupedProjection() : base(typeof(SimpleGroupedProjection<T>).FullName){}
+        public SimpleGroupedProjection(string categoryTokenKey, string valueTokenKey) : base(typeof(SimpleGroupedProjection<T>).FullName) {
             CategoryTokenKey = categoryTokenKey;
             ValueTokenKey = valueTokenKey;
         }

@@ -7,8 +7,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         public TGroupedProjection UnderlyingProjection {get; set;}
         
         // For model binding
-        public ValueProjection(){}
-        public ValueProjection(TGroupedProjection projection) {
+        public ValueProjection() : base(typeof(ValueProjection<TProjection, TGroupedProjection>).FullName){}
+        public ValueProjection(TGroupedProjection projection) : base(typeof(ValueProjection<TProjection, TGroupedProjection>).FullName) {
             UnderlyingProjection = projection;
         }
         public override TProjection Project(JObject jsonObject)

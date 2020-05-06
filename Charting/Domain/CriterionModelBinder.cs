@@ -4,28 +4,28 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DirectKeyDashboard.Charting.Domain {
-    public class SummaryModelBinder : IModelBinder
+    public class CriterionModelBinder : IModelBinder
     {
         private readonly ModelBinderProviderContext _providerContext;
-        public SummaryModelBinder(ModelBinderProviderContext providerContext) {
+        public CriterionModelBinder(ModelBinderProviderContext providerContext) {
             _providerContext = providerContext;
         }
 
-        public SummaryModelBinder() {}
+        public CriterionModelBinder() {}
 
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var typeName = ModelNames.CreatePropertyModelName(bindingContext.ModelName, nameof(Summary.SubtypeName));
+            var typeName = ModelNames.CreatePropertyModelName(bindingContext.ModelName, nameof(Criterion.SubtypeName));
             var typeValue = bindingContext.ValueProvider.GetValue(typeName).FirstValue;
             var type = string.IsNullOrEmpty(typeValue) ? null : Type.GetType(typeValue.ToString(), true);
             // If the type is null, then the object is null (every instance must have a
             // SubtypeName). Fail to bind, in this case
-            if (type == null) {
+            if (typeValue == null) {
                 bindingContext.Result = ModelBindingResult.Failed();
                 return;
             }
 
-            // Otherwise, create a new metadata and binding context,
+            // Otherwise, create a new metadata and a new binding context for the subtype,
             // and recursively bind the subtype
             var modelMetadata = _providerContext.MetadataProvider.GetMetadataForType(type);
             var binder = _providerContext.CreateBinder(modelMetadata);
@@ -47,6 +47,7 @@ namespace DirectKeyDashboard.Charting.Domain {
                     Metadata = modelMetadata,
                 };
             }
+            Console.WriteLine("Criterion model binder 2");
         }
     }
 }

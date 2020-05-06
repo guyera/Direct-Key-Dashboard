@@ -14,9 +14,9 @@ namespace DirectKeyDashboard.Charting.Domain {
         public Relation ValueRelation {get; set;}
 
         // For model binding
-        public FloatCriterion(){}
+        public FloatCriterion() : base(typeof(FloatCriterion).FullName) {}
 
-        public FloatCriterion(string key, float value, Relation valueRelation) {
+        public FloatCriterion(string key, float value, Relation valueRelation) : base(typeof(FloatCriterion).FullName) {
             Key = key;
             Value = value;
             ValueRelation = valueRelation;

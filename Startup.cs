@@ -32,6 +32,8 @@ namespace DirectKeyDashboard
 
             services.AddControllers(options => {
                 options.ModelBinderProviders.Insert(0, new SummaryModelBinderProvider());
+                options.ModelBinderProviders.Insert(0, new CriterionModelBinderProvider());
+                options.ModelBinderProviders.Insert(0, new ProjectionModelBinderProvider());
             });
         }
 

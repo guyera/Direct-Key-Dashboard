@@ -7,8 +7,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         public TProjection Projection {get; set;}
 
         // For model binding
-        public ProjectionCriterion(){}
-        public ProjectionCriterion (TProjection projection, TProjectionValue desiredValue) {
+        public ProjectionCriterion() : base(typeof(ProjectionCriterion<TProjectionValue, TProjection>).FullName){}
+        public ProjectionCriterion (TProjection projection, TProjectionValue desiredValue) : base(typeof(ProjectionCriterion<TProjectionValue, TProjection>).FullName) {
             DesiredValue = desiredValue;
             Projection = projection;
         }

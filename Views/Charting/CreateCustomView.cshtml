@@ -6,21 +6,28 @@
 @{
     ViewData["Title"] = "Charting Page";
     var viewTypeSelectId = "select-view-type";
-    var groupedBarViewId = "view-grouped-bar";
-    var barViewId = "view-bar";
-    var chartTitleInputId = "input-chart-title";
+    var groupedBarViewId = "grouped-bar-view";
+    var barViewId = "bar-view";
     var chartViewGroupId = "chart-view-group";
-    var projectionResultTypeSelectId = "projection-result-type-select";
+
+    var chartTitleInputId = "input-chart-title";
+    
+    var projectionResultSelectContainerId = "projection-result-select-container";
+    
+    var summaryMethodSelectId = "summary-method-select";
+    
+    var timeRelativityCheckboxId = "time-relative-to-present-checkbox";
+    var timeRelativityGroupId = "time-group";
+    var timeRelativeId = "time-group-relative";
+    var timeAbsoluteId = "time-group-absolute";
+    var relativeTimeStartValueInputId = "relative-time-start-months";
+    var relativeTimeStartGranularitySelectId = "relative-time-start-granularity-select";
+    var absoluteTimeStartDatePickerId = "absolute-time-start-date-picker";
+
+    string requiresProjectionAttr(CreateCustomViewModel.SummaryMethodOption opt) {
+        return opt.RequiresProjection ? "true" : "false";
+    }
 }
-
-@*TODO  Create NonProjectingApiGroupedBarCharts and NonProjectingApiLineCharts, and replace the string projecting
-        charts that have been projected thus far to use the NonProjecting charts (for counts), such as
-        the DeviceCounts chart, or the KeyCounts chart. Then, once certain that the NonProjecting charts
-        are working, get rid of StringProjecting charts entirely. Lastly, reduce generics in the projecting
-        bar charts and grouped charts and prefer polymorphism*@
-
-@*TODO  Only show projection result types when the summary type requires a projection. For instance,
-        count summaries do not require projections. They only require categorizers.*@
 
 @*TODO  InvervalStart, InvervalEnd*@
 
@@ -33,41 +40,73 @@
 <form class="form-group-container" asp-action="CreateCustomView" asp-controller="Charting" method="post">
     @*Shared content between all views*@
     
-    <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewTypeId">
-        <option value="none" selected disabled hidden>View type</option>
-        @foreach (var viewType in CreateCustomViewModel.ViewTypes) {
-            <option value="@viewType.ViewType">@viewType.DisplayName</option>
-        }
-    </select>
+    <div>
+        <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewTypeId">
+            <option value="none" selected>Select view type</option>
+            @foreach (var viewType in CreateCustomViewModel.ViewOptions) {
+                <option value="@viewType.ViewType">@viewType.DisplayName</option>
+            }
+        </select>
+    </div>
 
     <div class="form-group">
         <label for="@chartTitleInputId" style="margin: 0px;">Chart Title</label>
         <input type="text" class="form-control" id="@chartTitleInputId" placeholder="Chart Title" name="chartTitle" />
     </div>
 
-    @*TODO  Summary method option select picker, which toggles a mutually exclusive group of views (e.g. only
-            show the ProjectionResultOption select picker when the summary requires a projection*@
+    <div>
+        <select class="selectpicker" id="@summaryMethodSelectId" onchange="model.selectSummaryMethod()" name="summaryMethod">
+            <option value="none" selected>Select summary method</option>
+            @foreach (var summaryMethodOption in CreateCustomViewModel.SummaryMethodOptions) {
+                <option value="@summaryMethodOption.SummaryMethod" data-requires-projection="@requiresProjectionAttr(summaryMethodOption)">@summaryMethodOption.DisplayName</option>
+            }
+        </select>
+    </div>
 
-    <select class="selectpicker" id="@projectionResultTypeSelectId" onchange="model.selectProjectionResultType()" name="projectionResult">
-        <option value="none" selected disabled hidden>Projection result type</option>
-        @foreach (var projectionResultType in CreateCustomViewModel.ProjectionResultTypes) {
-            <option value="@projectionResultType.ProjectionResult">@projectionResultType.DisplayName</option>
-        }
-    </select>
+    <div id="@projectionResultSelectContainerId" style="display: none">
+        <select class="selectpicker" name="projectionResult">
+            <option value="none" selected>Select projection result</option>
+            @foreach (var projectionResultOption in CreateCustomViewModel.ProjectionResultOptions) {
+                <option value="@projectionResultOption.ProjectionResult">@projectionResultOption.DisplayName</option>
+            }
+        </select>
+    </div>
 
     @*Content associated with a specific chart view*@
-    <div class="mutually-exclusive-group" id="@chartViewGroupId">
+    <div id="@chartViewGroupId">
 
         @*Content associated with a grouped bar chart view*@
-        <div class="form-group-container mutually-exclusive-hidden" id="@groupedBarViewId">
+        <div class="form-group-container" style="display: none" id="@groupedBarViewId">
             EFGH
         </div>
 
         @*Content associated with a bar chart view*@
-        <div class="form-group-container mutually-exclusive-hidden" id="@barViewId">
+        <div class="form-group-container" style="display: none" id="@barViewId">
             ABCD
         </div>
     
+    </div>
+
+    <div>
+        <label for="@timeRelativityCheckboxId">Time relative to present</label>
+        <input id="@timeRelativityCheckboxId" type="checkbox" name="timeRelativeToPresent" onchange="model.selectTimeRelativity()" checked />
+        <div id="@timeRelativityGroupId">
+            <div id="@timeRelativeId" class="form-group-container">
+                <div>
+                    <label for="@relativeTimeStartValueInputId">Time Range</label>
+                    <input id="@relativeTimeStartValueInputId" type="number" value="1" name="relativeTimeStartValue" min="1" />
+                    <select id="@relativeTimeStartGranularitySelectId">
+                        @foreach (var timeGranularityOption in CreateCustomViewModel.TimeGranularityOptions) {
+                            <option value="@timeGranularityOption.TimeGranularity">@timeGranularityOption.DisplayName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div id="@timeAbsoluteId" class="form-group-container" style="display: none">
+                <input id="@absoluteTimeStartDatePickerId" data-provide="datepicker" class="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeStartDatePicker()" />
+            </div>
+        </div>
     </div>
 </form>
 
@@ -81,27 +120,67 @@
         initSelectViewType() {
             this.selectViewType = function selectViewType() {
                 var selectedView = this.viewTypeSelectElem.val();
+                this.chartViewGroupElem.children().hide();
                 if (selectedView == this.barView) {
-
                     // Load view associated with bar charts
-                    $('#@chartViewGroupId').children().addClass('mutually-exclusive-hidden');
-                    $('#@barViewId').removeClass('mutually-exclusive-hidden');
-
+                    this.barViewElem.show();
                 } else if (selectedView == this.groupedBarView) {
-
                     // Load view associated with grouped bar charts
-                    $('#@chartViewGroupId').children().addClass('mutually-exclusive-hidden');
-                    $('#@groupedBarViewId').removeClass('mutually-exclusive-hidden');
-
+                    this.groupedBarViewElem.show();
                 }
+            }
+        }
+
+        initSelectSummaryMethod() {
+            this.selectSummaryMethod = function selectSummaryMethod() {
+                var requiresProjection = this.summaryMethodSelectElem.find(':selected').data('requires-projection');
+                if (requiresProjection) {
+                    this.projectionResultSelectContainerElem.show();
+                } else {
+                    this.projectionResultSelectContainerElem.hide();
+                }
+            }
+        }
+
+        initSelectTimeRelativity() {
+            this.selectTimeRelativity = function selectTimeRelativity() {
+                var relative = this.timeRelativityCheckboxElem.prop('checked');
+                if (relative) {
+                    this.timeRelativityGroupElem.children().hide();
+                    this.timeRelativeElem.show();
+                } else {
+                    this.timeRelativityGroupElem.children().hide();
+                    this.timeAbsoluteElem.show();
+                }
+            }
+        }
+
+        initOpenAbsoluteTimeStartDatePicker() {
+            this.openAbsoluteTimeStartDatePicker = function openAbsoluteTimeStartDatePicker() {
+                this.absoluteTimeStartDatePickerElem.datepicker();
             }
         }
 
         init() {
             this.viewTypeSelectElem = $('#@viewTypeSelectId');
-            this.projectionResultTypeSelectElem = $('#@projectionResultTypeSelectId');
+            this.chartViewGroupElem = $('#@chartViewGroupId');
+            this.barViewElem = $('#@barViewId');
+            this.groupedBarViewElem = $('#@groupedBarViewId');
+
+            this.projectionResultSelectContainerElem = $('#@projectionResultSelectContainerId');
+
+            this.summaryMethodSelectElem = $('#@summaryMethodSelectId');
+
+            this.timeRelativityCheckboxElem = $('#@timeRelativityCheckboxId');
+            this.timeRelativityGroupElem = $('#@timeRelativityGroupId');
+            this.timeRelativeElem = $('#@timeRelativeId');
+            this.timeAbsoluteElem = $('#@timeAbsoluteId');
+            this.absoluteTimeStartDatePickerElem = $('#@absoluteTimeStartDatePickerId');
+
             this.initSelectViewType();
-            this.initSelectProjectionResultType();
+            this.initSelectSummaryMethod();
+            this.initSelectTimeRelativity();
+            this.initOpenAbsoluteTimeStartDatePicker();
         }
     }
 

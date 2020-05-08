@@ -97,10 +97,6 @@ body {
   margin-top: 30px;
 }
 
-.mutually-exclusive-hidden {
-  display: none;
-}
-
 .mutually-exclusive-group > * {
   position: absolute;
 }

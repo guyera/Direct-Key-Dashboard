@@ -25,6 +25,7 @@ namespace DirectKeyDashboard.Charting.Domain
     // Count and Average are currently supported.
     public enum SummaryMethod {
         Count,
-        Average
+        Average,
+        Median
     }
 }

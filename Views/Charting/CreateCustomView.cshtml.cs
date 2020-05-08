@@ -2,7 +2,7 @@
 
 namespace DirectKeyDashboard.Views.Charting {
     public class CreateCustomViewModel {
-        public static ViewTypeOption[] ViewTypes {get; set;} = {
+        public static ViewTypeOption[] ViewOptions {get; set;} = {
             new ViewTypeOption{
                 DisplayName = "Bar Chart",
                 ViewType = ViewType.Bar
@@ -13,11 +13,16 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
-        public static SummaryMethodOption[] SummaryMethods {get; set;} = {
+        public static SummaryMethodOption[] SummaryMethodOptions {get; set;} = {
             new SummaryMethodOption{
                 DisplayName = "Average",
                 RequiresProjection = true,
                 SummaryMethod = SummaryMethod.Average
+            },
+            new SummaryMethodOption{
+                DisplayName = "Median",
+                RequiresProjection = true,
+                SummaryMethod = SummaryMethod.Median
             },
             new SummaryMethodOption{
                 DisplayName = "Count",
@@ -26,10 +31,25 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
-        public static ProjectionResultOption[] ProjectionResultTypes {get; set;} = {
+        public static ProjectionResultOption[] ProjectionResultOptions {get; set;} = {
             new ProjectionResultOption{
                 DisplayName = "Number",
                 ProjectionResult = ProjectionResult.Number
+            }
+        };
+
+        public static TimeGranularityOption[] TimeGranularityOptions {get; set;} = {
+            new TimeGranularityOption{
+                DisplayName = "Days",
+                TimeGranularity = TimeGranularity.Day
+            },
+            new TimeGranularityOption{
+                DisplayName = "Months",
+                TimeGranularity = TimeGranularity.Month
+            },
+            new TimeGranularityOption{
+                DisplayName = "Years",
+                TimeGranularity = TimeGranularity.Year
             }
         };
 
@@ -52,6 +72,17 @@ namespace DirectKeyDashboard.Views.Charting {
         public class ProjectionResultOption {
             public string DisplayName {get; set;}
             public ProjectionResult ProjectionResult {get; set;}
+        }
+
+        public enum TimeGranularity {
+            Day,
+            Month,
+            Year
+        }
+
+        public class TimeGranularityOption {
+            public string DisplayName {get; set;}
+            public TimeGranularity TimeGranularity {get; set;}
         }
     }
 }

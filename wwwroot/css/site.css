@@ -97,6 +97,6 @@ body {
   margin-top: 30px;
 }
 
-.mutually-exclusive-group > * {
-  position: absolute;
+.form-group-container * {
+  margin-right: 5px;
 }

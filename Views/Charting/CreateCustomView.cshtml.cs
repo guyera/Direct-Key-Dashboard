@@ -53,6 +53,33 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
+        public static FloatCriterionRelationOption[] FloatCriterionRelationOptions {get; set;} = {
+            new FloatCriterionRelationOption{
+                DisplayName = "=",
+                Relation = FloatCriterion.Relation.Equal
+            },
+            new FloatCriterionRelationOption{
+                DisplayName = "\\u2260",
+                Relation = FloatCriterion.Relation.NotEqual
+            },
+            new FloatCriterionRelationOption{
+                DisplayName = "<",
+                Relation = FloatCriterion.Relation.Less
+            },
+            new FloatCriterionRelationOption{
+                DisplayName = "\\u2264",
+                Relation = FloatCriterion.Relation.LessOrEqual
+            },
+            new FloatCriterionRelationOption{
+                DisplayName = ">",
+                Relation = FloatCriterion.Relation.Greater
+            },
+            new FloatCriterionRelationOption{
+                DisplayName = "\\u2265",
+                Relation = FloatCriterion.Relation.GreaterOrEqual
+            },
+        };
+
         public class ViewTypeOption {
             public string DisplayName {get; set;}
             public ViewType ViewType {get; set;}
@@ -83,6 +110,11 @@ namespace DirectKeyDashboard.Views.Charting {
         public class TimeGranularityOption {
             public string DisplayName {get; set;}
             public TimeGranularity TimeGranularity {get; set;}
+        }
+
+        public class FloatCriterionRelationOption {
+            public string DisplayName {get; set;}
+            public FloatCriterion.Relation Relation {get; set;}
         }
     }
 }

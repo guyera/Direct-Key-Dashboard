@@ -11,6 +11,8 @@
     var chartViewGroupId = "chart-view-group";
 
     var chartTitleInputId = "input-chart-title";
+
+    var apiEndpointInputId = "api-endpoint-input";
     
     var projectionResultSelectContainerId = "projection-result-select-container";
     
@@ -35,7 +37,6 @@
     var groupedBarChartValuePropertyKeyInputId = "grouped-bar-chart-value-property-key-input";
     var groupedBarChartProjectionDetailsContainerId = "grouped-bar-chart-projection-details-container";
 
-    var floatCriterionIdPrefix = "float-criterion";
     var floatCriteriaContainerId = "float-criteria-container";
 
     string requiresProjectionAttr(CreateCustomViewModel.SummaryMethodOption opt) {
@@ -43,7 +44,7 @@
     }
 }
 
-@*TODO For grouped bar charts, SuperDatasetCategoryPropertyKey and list of ValuePropertyKeys*@
+@* TODO Drilldown endpoint *@
 
 <form class="form-group-container" asp-action="CreateCustomView" asp-controller="Charting" method="post">
     @*Shared content between all views*@
@@ -60,6 +61,11 @@
     <div>
         <label for="@chartTitleInputId" style="margin: 0px;">Chart Title</label>
         <input type="text" class="form-control" id="@chartTitleInputId" placeholder="Chart Title" name="chartTitle" />
+    </div>
+    
+    <div>
+        <label for="@apiEndpointInputId" style="margin: 0px">Api Endpoint</label>
+        <input type="text" class="form-control" id="@apiEndpointInputId" placeholder="Api Endpoint (e.g. KeyDeviceActivity)" name="apiEndpoint" />
     </div>
 
     <div>
@@ -99,7 +105,7 @@
                 </div>
             </div>
 
-            <div id="@groupedBarChartProjectionDetailsContainerId" style="display: none;">
+            <div id="@groupedBarChartProjectionDetailsContainerId" class="form-group-container" style="display: none;">
                 @* Button to add more projection sources *@
                 <button class="btn btn-primary" type="button" onclick="model.addGroupedBarChartValuePropertyKey()">Add Value Property Key</button>
             </div>
@@ -228,17 +234,15 @@
             }
         }
 
-        genDeleteFloatCriterionFunction(criterion) {
-            return function deleteFloatCriterion() {
-                criterion.remove();
+        genDeleteElemFunction(elem) {
+            return function deleteElem() {
+                elem.remove();
             }
         }
 
         initAddFloatCriterion() {
             this.addFloatCriterion = function addFloatCriterion() {
                 var container = document.createElement('div');
-                var id = "@(floatCriterionIdPrefix)-" + this.floatCriterionIdx++;
-                container.id = id;
                 
                 var jsonPropertyNameInput = document.createElement('input');
                 jsonPropertyNameInput.setAttribute('type', 'text');
@@ -267,16 +271,32 @@
                 deleteButton.classList.add('btn');
                 deleteButton.classList.add('btn-danger');
                 deleteButton.textContent = "Delete";
-                deleteButton.onclick = this.genDeleteFloatCriterionFunction($(container));
+                deleteButton.onclick = this.genDeleteElemFunction($(container));
                 container.appendChild(deleteButton);
 
-                this.floatCriteriaContainer.append($(container));
+                this.floatCriteriaContainerElem.append($(container));
             }
         }
 
         initAddGroupedBarChartValuePropertyKey() {
             this.addGroupedBarChartValuePropertyKey = function addGroupedBarChartValuePropertyKey() {
-                console.log("Button clicked");
+                var container = document.createElement('div');
+
+                var jsonPropertyNameInput = document.createElement('input');
+                jsonPropertyNameInput.setAttribute('type', 'text');
+                jsonPropertyNameInput.classList.add('json-property-name-input');
+                jsonPropertyNameInput.placeholder = "JSON Property Name";
+                container.appendChild(jsonPropertyNameInput);
+                
+                var deleteButton = document.createElement('button');
+                deleteButton.setAttribute('type', 'button');
+                deleteButton.classList.add('btn');
+                deleteButton.classList.add('btn-danger');
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = this.genDeleteElemFunction($(container));
+                container.appendChild(deleteButton);
+
+                this.groupedBarChartProjectionDetailsContainerElem.append($(container));
             }
         }
 
@@ -302,7 +322,7 @@
             this.absoluteTimeStartDatePickerElem = $('#@absoluteTimeStartDatePickerId');
             this.absoluteTimeEndDatePickerElem = $('#@absoluteTimeEndDatePickerId');
 
-            this.floatCriteriaContainer = $('#@floatCriteriaContainerId');
+            this.floatCriteriaContainerElem = $('#@floatCriteriaContainerId');
 
             this.initSelectViewType();
             this.initSelectSummaryMethod();

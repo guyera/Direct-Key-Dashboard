@@ -5,6 +5,7 @@ using System.Linq;
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class MedianSummary : Summary<float, float> {
+        public MedianSummary() : base(typeof(MedianSummary).FullName) {}
         public override float Summarize(IEnumerable<float> data) {
             var orderedData = data.OrderBy(d => d);
             var count = orderedData.Count();

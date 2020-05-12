@@ -10,6 +10,9 @@ using System.Linq;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+
+/* TODO Custom model binding for polymorphic types like summaries, projections, and filters */
 
 namespace DirectKeyDashboard.Controllers
 {
@@ -43,6 +46,10 @@ namespace DirectKeyDashboard.Controllers
             }
             return View(_dbContext.CustomBarCharts.ToList());
         }
+        
+        public IActionResult CreateCustomView() {
+            return View();
+        }
 
         public IActionResult ViewOne() {
             return View();
@@ -57,6 +64,10 @@ namespace DirectKeyDashboard.Controllers
         }
 
         public IActionResult ViewFour() {
+            return View();
+        }
+
+        public IActionResult ViewFive() {
             return View();
         }
 
@@ -81,13 +92,23 @@ namespace DirectKeyDashboard.Controllers
         }
 
         [HttpPost]
-        public IActionResult StringCountApiLineChart(CountSummary<string> summary, Filter<ProjectionCriterion<string, SimpleProjection<string>>> preFilter, Filter<ProjectionCriterion<string, CategoryProjection<string, SimpleGroupedProjection<string>>>> filter, TimeSeries timeSeries, ValueProjection<string, SimpleGroupedProjection<string>> projection) {
+        public IActionResult StringCountApiLineChart(Summary<string, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries, Projection<string> projection) {
             return ViewComponent(typeof(StringCountApiLineChartViewComponent), new {
                 summary,
                 preFilter,
                 filter,
                 timeSeries,
                 projection
+            });
+        }
+
+        [HttpPost]
+        public IActionResult NonProjectingApiLineChart(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries) {
+            return ViewComponent(typeof(NonProjectingApiLineChartViewComponent), new {
+                preFilter,
+                filter,
+                summary,
+                timeSeries
             });
         }
 

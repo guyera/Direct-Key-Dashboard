@@ -8,8 +8,8 @@ namespace DirectKeyDashboard.Charting.Domain {
         public string SubKey {get; set;}
         
         // For model binding
-        public CompositeValueProjection(){}
-        public CompositeValueProjection(TCompositeProjection projection, string subKey) {
+        public CompositeValueProjection() : base(typeof(CompositeValueProjection<TProjectionValue, TCompositeProjection>).FullName){}
+        public CompositeValueProjection(TCompositeProjection projection, string subKey) : base(typeof(CompositeValueProjection<TProjectionValue, TCompositeProjection>).FullName) {
             UnderlyingProjection = projection;
             SubKey = subKey;
         }

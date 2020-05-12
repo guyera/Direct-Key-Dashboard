@@ -10,9 +10,9 @@ namespace DirectKeyDashboard.Charting.Domain {
         public string TokenKey {get; set;}
         
         // For model binding
-        public SimpleProjection(){}
+        public SimpleProjection() : base(typeof(SimpleProjection<T>).FullName){}
 
-        public SimpleProjection(string tokenKey) {
+        public SimpleProjection(string tokenKey) : base(typeof(SimpleProjection<T>).FullName) {
             TokenKey = tokenKey;
         }
 

@@ -10,5 +10,7 @@ namespace DirectKeyDashboard.Charting.Domain
     // belong to certain categories. Group is
     // represented as a string in the returned
     // KVP, and the value is a generic type.
-    public abstract class GroupedProjection<T> : Projection<KeyValuePair<string, T>> {}
+    public abstract class GroupedProjection<T> : Projection<KeyValuePair<string, T>> {
+        public GroupedProjection(string subtypeName) : base(subtypeName) {}
+    }
 }

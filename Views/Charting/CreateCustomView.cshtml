@@ -1,0 +1,330 @@
+﻿@model CreateCustomViewModel
+
+@using DirectKeyDashboard.Views.Charting
+@using DirectKeyDashboard.Charting.Domain
+
+@{
+    ViewData["Title"] = "Charting Page";
+    var viewTypeSelectId = "select-view-type";
+    var groupedBarViewId = "grouped-bar-view";
+    var barViewId = "bar-view";
+    var chartViewGroupId = "chart-view-group";
+
+    var chartTitleInputId = "input-chart-title";
+    
+    var projectionResultSelectContainerId = "projection-result-select-container";
+    
+    var summaryMethodSelectId = "summary-method-select";
+    
+    var timeRelativityCheckboxId = "time-relative-to-present-checkbox";
+    var timeRelativityGroupId = "time-group";
+    var timeRelativeId = "time-group-relative";
+    var timeAbsoluteId = "time-group-absolute";
+    var relativeTimeStartValueInputId = "relative-time-start-months";
+    var relativeTimeStartGranularitySelectId = "relative-time-start-granularity-select";
+    var absoluteTimeStartDatePickerId = "absolute-time-start-date-picker";
+    var absoluteTimeEndDatePickerId = "absolute-time-end-date-picker";
+
+    var barChartProjectionDetailsContainerId = "bar-chart-projection-details-container";
+    var barChartCategoryPropertyKeyInputId = "bar-chart-category-property-key-input";
+    var barChartValuePropertyKeyInputId = "bar-chart-value-property-key-input";
+
+    var groupedBarChartCategoryPropertyKeyInputId = "grouped-bar-chart-category-property-key-input";
+    var groupedBarChartCategorizingDetailsContainerId = "grouped-bar-chart-categorizing-details-container";
+    var groupedBarChartSubcategoryPropertyKeyInputId = "grouped-bar-chart-subcategory-property-key-input";
+    var groupedBarChartValuePropertyKeyInputId = "grouped-bar-chart-value-property-key-input";
+    var groupedBarChartProjectionDetailsContainerId = "grouped-bar-chart-projection-details-container";
+
+    var floatCriterionIdPrefix = "float-criterion";
+    var floatCriteriaContainerId = "float-criteria-container";
+
+    string requiresProjectionAttr(CreateCustomViewModel.SummaryMethodOption opt) {
+        return opt.RequiresProjection ? "projecting" : "categorizing";
+    }
+}
+
+@*TODO For grouped bar charts, SuperDatasetCategoryPropertyKey and list of ValuePropertyKeys*@
+
+<form class="form-group-container" asp-action="CreateCustomView" asp-controller="Charting" method="post">
+    @*Shared content between all views*@
+    <h3>Basic Information</h3>
+    <div>
+        <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewTypeId">
+            <option value="none" selected>Select view type</option>
+            @foreach (var viewType in CreateCustomViewModel.ViewOptions) {
+                <option value="@viewType.ViewType">@viewType.DisplayName</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label for="@chartTitleInputId" style="margin: 0px;">Chart Title</label>
+        <input type="text" class="form-control" id="@chartTitleInputId" placeholder="Chart Title" name="chartTitle" />
+    </div>
+
+    <div>
+        <select class="selectpicker" id="@summaryMethodSelectId" onchange="model.selectSummaryMethod()" name="summaryMethod">
+            <option value="none" selected>Select summary method</option>
+            @foreach (var summaryMethodOption in CreateCustomViewModel.SummaryMethodOptions) {
+                <option value="@summaryMethodOption.SummaryMethod" data-projection-type="@requiresProjectionAttr(summaryMethodOption)">@summaryMethodOption.DisplayName</option>
+            }
+        </select>
+    </div>
+
+    <div id="@projectionResultSelectContainerId" style="display: none">
+        <select class="selectpicker" name="projectionResult">
+            <option value="none" selected>Select projection result</option>
+            @foreach (var projectionResultOption in CreateCustomViewModel.ProjectionResultOptions) {
+                <option value="@projectionResultOption.ProjectionResult">@projectionResultOption.DisplayName</option>
+            }
+        </select>
+    </div>
+
+    @*Content associated with a specific chart view*@
+    <div id="@chartViewGroupId">
+        @*Content associated with a grouped bar chart view*@
+        <div class="form-group-container" style="display: none" id="@groupedBarViewId">
+            <h3>Grouped Bar Chart Projection</h3>
+            <label for="@groupedBarChartCategoryPropertyKeyInputId" style="display: block;">Categorizing JSON Property (dataset label source)</label>
+            <input id="@groupedBarChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" />
+
+            <div id="@groupedBarChartCategorizingDetailsContainerId" class="form-group-container" style="display: none;">
+                <div>
+                    <label for="@groupedBarChartSubcategoryPropertyKeyInputId" style="display: block;">Subcategorizing JSON Property (x-axis label source)</label>
+                    <input id="@groupedBarChartSubcategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Subcategory JSON Property Name" />
+                </div>
+                <div>
+                    <label for="@groupedBarChartValuePropertyKeyInputId" style="display: block;">Value JSON Property (y-axis label source)</label>
+                    <input id="@groupedBarChartValuePropertyKeyInputId" class="form-control" type="text" placeholder="Value JSON Property Name" />
+                </div>
+            </div>
+
+            <div id="@groupedBarChartProjectionDetailsContainerId" style="display: none;">
+                @* Button to add more projection sources *@
+                <button class="btn btn-primary" type="button" onclick="model.addGroupedBarChartValuePropertyKey()">Add Value Property Key</button>
+            </div>
+        </div>
+
+        @*Content associated with a bar chart view*@
+        <div class="form-group-container" style="display: none" id="@barViewId">
+            <h3>Bar Chart Projection</h3>
+            <label for="@barChartCategoryPropertyKeyInputId" style="display: block;">Categorizing JSON Property (x-axis label source)</label>
+            <input id="@barChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" />
+            <div id="@barChartProjectionDetailsContainerId" style="display: none;">
+                <label for="@barChartValuePropertyKeyInputId" style="display: block;">Value JSON Property (y-axis value source)</label>
+                <input id="@barChartValuePropertyKeyInputId" class="form-control" type="text" placeholder="Value JSON Property Name" />
+            </div>
+        </div>
+    </div>
+
+    @* Interval start and end times *@
+    <h3>Time interval</h3>
+    <div class="form-group-container">
+        <div>
+            <label for="@timeRelativityCheckboxId">Time relative to present </label>
+            <input id="@timeRelativityCheckboxId" type="checkbox" name="timeRelativeToPresent" onchange="model.selectTimeRelativity()" checked />
+        </div>
+        <div id="@timeRelativityGroupId">
+            <div id="@timeRelativeId">
+                <label for="@relativeTimeStartValueInputId" style="display: block;">Time Range</label>
+                <input id="@relativeTimeStartValueInputId" type="number" value="1" name="relativeTimeStartValue" min="1" />
+                <select id="@relativeTimeStartGranularitySelectId">
+                    @foreach (var timeGranularityOption in CreateCustomViewModel.TimeGranularityOptions) {
+                        <option value="@timeGranularityOption.TimeGranularity">@timeGranularityOption.DisplayName</option>
+                    }
+                </select>
+            </div>
+
+            <div id="@timeAbsoluteId" class="form-group-container" style="display: none">
+                <div>
+                    <label for="@absoluteTimeStartDatePickerId" style="display: block">Interval start: </label>
+                    <input id="@absoluteTimeStartDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeStartDatePicker()" />
+                </div>
+                <div>
+                    <label for="@absoluteTimeStartDatePickerId" style="display: block">Interval end: </label>
+                    <input id="@absoluteTimeEndDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeEndDatePicker()" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Numerical criteria *@
+    <h3>Numerical criteria</h3>
+    <div id="@floatCriteriaContainerId" class="form-group-container">
+        <div>
+            @* Button to add more criteria *@
+            <button class="btn btn-primary" type="button" onclick="model.addFloatCriterion()">Add Criterion</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    class CreateCustomViewModel {
+        constructor() {
+            this.barView = "@CreateCustomViewModel.ViewType.Bar";
+            this.groupedBarView = "@CreateCustomViewModel.ViewType.GroupedBar";
+            this.floatCriterionIdx = 0;
+            this.floatCriterionRelationOptions = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(CreateCustomViewModel.FloatCriterionRelationOptions))');
+        }
+
+        initSelectViewType() {
+            this.selectViewType = function selectViewType() {
+                var selectedView = this.viewTypeSelectElem.val();
+                this.chartViewGroupElem.children().hide();
+                if (selectedView == this.barView) {
+                    // Load view associated with bar charts
+                    this.barViewElem.show();
+                } else if (selectedView == this.groupedBarView) {
+                    // Load view associated with grouped bar charts
+                    this.groupedBarViewElem.show();
+                }
+            }
+        }
+
+        initSelectSummaryMethod() {
+            this.selectSummaryMethod = function selectSummaryMethod() {
+                var projectionType = this.summaryMethodSelectElem.find(':selected').data('projection-type');
+                if (projectionType == "projecting") {
+                    this.projectionResultSelectContainerElem.show();
+                    this.barChartProjectionDetailsContainerElem.show();
+                    this.groupedBarChartProjectionDetailsContainerElem.show();
+                    this.groupedBarChartCategorizingDetailsContainerElem.hide();
+                } else if(projectionType == "categorizing") {
+                    this.projectionResultSelectContainerElem.hide();
+                    this.barChartProjectionDetailsContainerElem.hide();
+                    this.groupedBarChartProjectionDetailsContainerElem.hide();
+                    this.groupedBarChartCategorizingDetailsContainerElem.show();
+                } else {
+                    this.projectionResultSelectContainerElem.hide();
+                    this.barChartProjectionDetailsContainerElem.hide();
+                    this.groupedBarChartProjectionDetailsContainerElem.hide();
+                    this.groupedBarChartCategorizingDetailsContainerElem.hide();
+                }
+            }
+        }
+
+        initSelectTimeRelativity() {
+            this.selectTimeRelativity = function selectTimeRelativity() {
+                var relative = this.timeRelativityCheckboxElem.prop('checked');
+                if (relative) {
+                    this.timeRelativityGroupElem.children().hide();
+                    this.timeRelativeElem.show();
+                } else {
+                    this.timeRelativityGroupElem.children().hide();
+                    this.timeAbsoluteElem.show();
+                }
+            }
+        }
+
+        initOpenAbsoluteTimeStartDatePicker() {
+            this.openAbsoluteTimeStartDatePicker = function openAbsoluteTimeStartDatePicker() {
+                this.absoluteTimeStartDatePickerElem.datepicker();
+            }
+        }
+
+        initOpenAbsoluteTimeEndDatePicker() {
+            this.openAbsoluteTimeEndDatePicker = function openAbsoluteTimeEndDatePicker() {
+                this.absoluteTimeEndDatePickerElem.datepicker();
+            }
+        }
+
+        genDeleteFloatCriterionFunction(criterion) {
+            return function deleteFloatCriterion() {
+                criterion.remove();
+            }
+        }
+
+        initAddFloatCriterion() {
+            this.addFloatCriterion = function addFloatCriterion() {
+                var container = document.createElement('div');
+                var id = "@(floatCriterionIdPrefix)-" + this.floatCriterionIdx++;
+                container.id = id;
+                
+                var jsonPropertyNameInput = document.createElement('input');
+                jsonPropertyNameInput.setAttribute('type', 'text');
+                jsonPropertyNameInput.classList.add('json-property-name-input');
+                jsonPropertyNameInput.placeholder = "JSON Property Name";
+                container.appendChild(jsonPropertyNameInput);
+
+                var relationSelect = document.createElement('select');
+                relationSelect.classList.add('float-criterion-relation-select');
+                for (var i = 0; i < this.floatCriterionRelationOptions.length; i++) {
+                    var option = document.createElement('option');
+                    option.value = this.floatCriterionRelationOptions[i].@(nameof(CreateCustomViewModel.FloatCriterionRelationOption.Relation));
+                    option.textContent = this.floatCriterionRelationOptions[i].@(nameof(CreateCustomViewModel.FloatCriterionRelationOption.DisplayName));
+                    relationSelect.appendChild(option);
+                }
+                container.appendChild(relationSelect);
+
+                var comparedValueInput = document.createElement('input');
+                comparedValueInput.setAttribute('type', 'number');
+                comparedValueInput.classList.add('compared-value-input');
+                comparedValueInput.placeholder = "Value";
+                container.appendChild(comparedValueInput);
+
+                var deleteButton = document.createElement('button');
+                deleteButton.setAttribute('type', 'button');
+                deleteButton.classList.add('btn');
+                deleteButton.classList.add('btn-danger');
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = this.genDeleteFloatCriterionFunction($(container));
+                container.appendChild(deleteButton);
+
+                this.floatCriteriaContainer.append($(container));
+            }
+        }
+
+        initAddGroupedBarChartValuePropertyKey() {
+            this.addGroupedBarChartValuePropertyKey = function addGroupedBarChartValuePropertyKey() {
+                console.log("Button clicked");
+            }
+        }
+
+        init() {
+            this.viewTypeSelectElem = $('#@viewTypeSelectId');
+            this.chartViewGroupElem = $('#@chartViewGroupId');
+            this.barViewElem = $('#@barViewId');
+            this.groupedBarViewElem = $('#@groupedBarViewId');
+
+            this.projectionResultSelectContainerElem = $('#@projectionResultSelectContainerId');
+
+            this.summaryMethodSelectElem = $('#@summaryMethodSelectId');
+
+            this.barChartProjectionDetailsContainerElem = $('#@barChartProjectionDetailsContainerId');
+            
+            this.groupedBarChartCategorizingDetailsContainerElem = $('#@groupedBarChartCategorizingDetailsContainerId');
+            this.groupedBarChartProjectionDetailsContainerElem = $('#@groupedBarChartProjectionDetailsContainerId');
+
+            this.timeRelativityCheckboxElem = $('#@timeRelativityCheckboxId');
+            this.timeRelativityGroupElem = $('#@timeRelativityGroupId');
+            this.timeRelativeElem = $('#@timeRelativeId');
+            this.timeAbsoluteElem = $('#@timeAbsoluteId');
+            this.absoluteTimeStartDatePickerElem = $('#@absoluteTimeStartDatePickerId');
+            this.absoluteTimeEndDatePickerElem = $('#@absoluteTimeEndDatePickerId');
+
+            this.floatCriteriaContainer = $('#@floatCriteriaContainerId');
+
+            this.initSelectViewType();
+            this.initSelectSummaryMethod();
+            this.initSelectTimeRelativity();
+            this.initOpenAbsoluteTimeStartDatePicker();
+            this.initOpenAbsoluteTimeEndDatePicker();
+            this.initAddFloatCriterion();
+            this.initAddGroupedBarChartValuePropertyKey();
+        }
+    }
+
+    const model = new CreateCustomViewModel();
+    
+    // Init the model after window has loaded, so that we
+    // have access to jquery. Necessary for server-side rendering
+    // to be embedded into the page before jQuery and other
+    // libraries.
+    var prevOnload = window.onload;
+    window.onload = function() {
+        if (prevOnload) {
+            prevOnload();
+        }
+        model.init();
+    }
+</script>

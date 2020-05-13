@@ -47,8 +47,39 @@ namespace DirectKeyDashboard.Controllers
             return View(_dbContext.CustomBarCharts.ToList());
         }
         
+        [HttpGet]
         public IActionResult CreateCustomView() {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateCustomView(CreateCustomViewModel.ViewType chartViewType, string chartTitle, string apiEndpoint, SummaryMethod summaryMethod,
+                                              ProjectionResult projectionResult, string groupedBarChartDatasetPropertyKey, string groupedBarChartCategoryPropertyKey,
+                                              List<string> groupedBarChartValuePropertyKeys, string barChartCategoryPropertyKey, string barChartValuePropertyKey,
+                                              bool timeRelative, int relativeTimeStartValue, CreateCustomViewModel.TimeGranularity relativeTimeStartGranularity,
+                                              string absoluteTimeStartDate, string absoluteTimeEndDate, List<string> floatCriteriaJsonPropertyNames,
+                                              List<FloatCriterion.Relation> floatCriteriaRelations, List<float> floatCriteriaComparedValues) {
+            
+            Console.WriteLine($"View type: {chartViewType}");
+            Console.WriteLine($"Chart title: {chartTitle}");
+            Console.WriteLine($"Api endpoint: {apiEndpoint}");
+            Console.WriteLine($"Summary method: {summaryMethod}");
+            Console.WriteLine($"Projection result: {projectionResult}");
+            Console.WriteLine($"groupedBarChartDatasetPropertyKey: {groupedBarChartDatasetPropertyKey}");
+            Console.WriteLine($"groupedBarChartCategoryPropertyKey: {groupedBarChartCategoryPropertyKey}");
+            Console.WriteLine($"groupedBarChartValuePropertyKeys length: {groupedBarChartValuePropertyKeys.Count}");
+            Console.WriteLine($"barChartCategoryPropertyKey: {barChartCategoryPropertyKey}");
+            Console.WriteLine($"barChartValuePropertyKey: {barChartValuePropertyKey}");
+            Console.WriteLine($"timeRelative: {timeRelative}");
+            Console.WriteLine($"relativeTimeStartValue: {relativeTimeStartValue}");
+            Console.WriteLine($"relativeTimeStartGranularity: {relativeTimeStartGranularity}");
+            Console.WriteLine($"absoluteTimeStartDate: {absoluteTimeStartDate}");
+            Console.WriteLine($"absoluteTimeEndDate: {absoluteTimeEndDate}");
+            Console.WriteLine($"floatCriteriaJsonPropertyNames length: {floatCriteriaJsonPropertyNames.Count}");
+            Console.WriteLine($"floatCriteriaRelations length: {floatCriteriaRelations.Count}");
+            Console.WriteLine($"floatCriteriaComparedValues length: {floatCriteriaComparedValues.Count}");
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult ViewOne() {

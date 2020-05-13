@@ -31,10 +31,9 @@
     var barChartCategoryPropertyKeyInputId = "bar-chart-category-property-key-input";
     var barChartValuePropertyKeyInputId = "bar-chart-value-property-key-input";
 
-    var groupedBarChartCategoryPropertyKeyInputId = "grouped-bar-chart-category-property-key-input";
+    var groupedBarChartDatasetPropertyKeyInputId = "grouped-bar-chart-category-property-key-input";
     var groupedBarChartCategorizingDetailsContainerId = "grouped-bar-chart-categorizing-details-container";
-    var groupedBarChartSubcategoryPropertyKeyInputId = "grouped-bar-chart-subcategory-property-key-input";
-    var groupedBarChartValuePropertyKeyInputId = "grouped-bar-chart-value-property-key-input";
+    var groupedBarChartCategoryPropertyKeyInputId = "grouped-bar-chart-subcategory-property-key-input";
     var groupedBarChartProjectionDetailsContainerId = "grouped-bar-chart-projection-details-container";
 
     var floatCriteriaContainerId = "float-criteria-container";
@@ -50,7 +49,7 @@
     @*Shared content between all views*@
     <h3>Basic Information</h3>
     <div>
-        <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewTypeId">
+        <select class="selectpicker" id="@viewTypeSelectId" onchange="model.selectViewType()" name="chartViewType">
             <option value="none" selected>Select view type</option>
             @foreach (var viewType in CreateCustomViewModel.ViewOptions) {
                 <option value="@viewType.ViewType">@viewType.DisplayName</option>
@@ -77,7 +76,7 @@
         </select>
     </div>
 
-    <div id="@projectionResultSelectContainerId" style="display: none">
+    <div id="@projectionResultSelectContainerId" style="display: none" name="projectionResult">
         <select class="selectpicker" name="projectionResult">
             <option value="none" selected>Select projection result</option>
             @foreach (var projectionResultOption in CreateCustomViewModel.ProjectionResultOptions) {
@@ -91,17 +90,13 @@
         @*Content associated with a grouped bar chart view*@
         <div class="form-group-container" style="display: none" id="@groupedBarViewId">
             <h3>Grouped Bar Chart Projection</h3>
-            <label for="@groupedBarChartCategoryPropertyKeyInputId" style="display: block;">Categorizing JSON Property (dataset label source)</label>
-            <input id="@groupedBarChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" />
+            <label for="@groupedBarChartDatasetPropertyKeyInputId" style="display: block;">Categorizing JSON Property (dataset label source)</label>
+            <input id="@groupedBarChartDatasetPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" name="groupedBarChartDatasetPropertyKey" />
 
             <div id="@groupedBarChartCategorizingDetailsContainerId" class="form-group-container" style="display: none;">
                 <div>
-                    <label for="@groupedBarChartSubcategoryPropertyKeyInputId" style="display: block;">Subcategorizing JSON Property (x-axis label source)</label>
-                    <input id="@groupedBarChartSubcategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Subcategory JSON Property Name" />
-                </div>
-                <div>
-                    <label for="@groupedBarChartValuePropertyKeyInputId" style="display: block;">Value JSON Property (y-axis label source)</label>
-                    <input id="@groupedBarChartValuePropertyKeyInputId" class="form-control" type="text" placeholder="Value JSON Property Name" />
+                    <label for="@groupedBarChartCategoryPropertyKeyInputId" style="display: block;">Subcategorizing JSON Property (x-axis label source)</label>
+                    <input id="@groupedBarChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Subcategory JSON Property Name" name="groupedBarChartCategoryPropertyKey" />
                 </div>
             </div>
 
@@ -114,11 +109,13 @@
         @*Content associated with a bar chart view*@
         <div class="form-group-container" style="display: none" id="@barViewId">
             <h3>Bar Chart Projection</h3>
-            <label for="@barChartCategoryPropertyKeyInputId" style="display: block;">Categorizing JSON Property (x-axis label source)</label>
-            <input id="@barChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" />
+            <div>
+                <label for="@barChartCategoryPropertyKeyInputId" style="display: block;">Categorizing JSON Property (x-axis label source)</label>
+                <input id="@barChartCategoryPropertyKeyInputId" class="form-control" type="text" placeholder="Category JSON Property Name" name="barChartCategoryPropertyKey" />
+            </div>
             <div id="@barChartProjectionDetailsContainerId" style="display: none;">
                 <label for="@barChartValuePropertyKeyInputId" style="display: block;">Value JSON Property (y-axis value source)</label>
-                <input id="@barChartValuePropertyKeyInputId" class="form-control" type="text" placeholder="Value JSON Property Name" />
+                <input id="@barChartValuePropertyKeyInputId" class="form-control" type="text" placeholder="Value JSON Property Name" name="barChartValuePropertyKey" />
             </div>
         </div>
     </div>
@@ -128,13 +125,13 @@
     <div class="form-group-container">
         <div>
             <label for="@timeRelativityCheckboxId">Time relative to present </label>
-            <input id="@timeRelativityCheckboxId" type="checkbox" name="timeRelativeToPresent" onchange="model.selectTimeRelativity()" checked />
+            <input id="@timeRelativityCheckboxId" type="checkbox" name="timeRelativeToPresent" onchange="model.selectTimeRelativity()" name="timeRelative" checked />
         </div>
         <div id="@timeRelativityGroupId">
             <div id="@timeRelativeId">
                 <label for="@relativeTimeStartValueInputId" style="display: block;">Time Range</label>
                 <input id="@relativeTimeStartValueInputId" type="number" value="1" name="relativeTimeStartValue" min="1" />
-                <select id="@relativeTimeStartGranularitySelectId">
+                <select id="@relativeTimeStartGranularitySelectId" name="relativeTimeStartGranularity">
                     @foreach (var timeGranularityOption in CreateCustomViewModel.TimeGranularityOptions) {
                         <option value="@timeGranularityOption.TimeGranularity">@timeGranularityOption.DisplayName</option>
                     }
@@ -144,11 +141,11 @@
             <div id="@timeAbsoluteId" class="form-group-container" style="display: none">
                 <div>
                     <label for="@absoluteTimeStartDatePickerId" style="display: block">Interval start: </label>
-                    <input id="@absoluteTimeStartDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeStartDatePicker()" />
+                    <input id="@absoluteTimeStartDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeStartDatePicker()" name="absoluteTimeStartDate" />
                 </div>
                 <div>
                     <label for="@absoluteTimeStartDatePickerId" style="display: block">Interval end: </label>
-                    <input id="@absoluteTimeEndDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeEndDatePicker()" />
+                    <input id="@absoluteTimeEndDatePickerId" data-provide="datepicker" data-date-format="mm/dd/yyyy" onfocus="model.openAbsoluteTimeEndDatePicker()" name="absoluteTimeEndDate" />
                 </div>
             </div>
         </div>
@@ -162,6 +159,8 @@
             <button class="btn btn-primary" type="button" onclick="model.addFloatCriterion()">Add Criterion</button>
         </div>
     </div>
+
+    <button class="btn btn-primary" type="submit">Create Chart</button>
 </form>
 
 <script type="text/javascript">
@@ -170,6 +169,7 @@
             this.barView = "@CreateCustomViewModel.ViewType.Bar";
             this.groupedBarView = "@CreateCustomViewModel.ViewType.GroupedBar";
             this.floatCriterionIdx = 0;
+            this.groupedBarChartValuePropertyKeyIndex = 0;
             this.floatCriterionRelationOptions = JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(CreateCustomViewModel.FloatCriterionRelationOptions))');
         }
 
@@ -243,12 +243,25 @@
         initAddFloatCriterion() {
             this.addFloatCriterion = function addFloatCriterion() {
                 var container = document.createElement('div');
+
+                var idx = this.floatCriterionIdx++;
+                var jsonPropertyNameIndexInput = document.createElement('input');
+                jsonPropertyNameIndexInput.setAttribute('type', 'hidden');
+                jsonPropertyNameIndexInput.name = "floatCriteriaJsonPropertyNames.Index";
+                jsonPropertyNameIndexInput.value = idx.toString();
+                container.appendChild(jsonPropertyNameIndexInput);
                 
                 var jsonPropertyNameInput = document.createElement('input');
                 jsonPropertyNameInput.setAttribute('type', 'text');
-                jsonPropertyNameInput.classList.add('json-property-name-input');
                 jsonPropertyNameInput.placeholder = "JSON Property Name";
+                jsonPropertyNameInput.name = "floatCriteriaJsonPropertyNames[" + idx + "]";
                 container.appendChild(jsonPropertyNameInput);
+
+                var relationIndexInput = document.createElement('input');
+                relationIndexInput.setAttribute('type', 'hidden');
+                relationIndexInput.name = "floatCriteriaRelations.Index";
+                relationIndexInput.value = idx.toString();
+                container.appendChild(relationIndexInput);
 
                 var relationSelect = document.createElement('select');
                 relationSelect.classList.add('float-criterion-relation-select');
@@ -258,12 +271,20 @@
                     option.textContent = this.floatCriterionRelationOptions[i].@(nameof(CreateCustomViewModel.FloatCriterionRelationOption.DisplayName));
                     relationSelect.appendChild(option);
                 }
+                relationSelect.name = "floatCriteriaRelations[" + idx + "]";
                 container.appendChild(relationSelect);
+
+                var comparedValueIndexInput = document.createElement('input');
+                comparedValueIndexInput.setAttribute('type', 'hidden');
+                comparedValueIndexInput.name = "floatCriteriaComparedValues.Index";
+                comparedValueIndexInput.value = idx.toString();
+                container.appendChild(comparedValueIndexInput);
 
                 var comparedValueInput = document.createElement('input');
                 comparedValueInput.setAttribute('type', 'number');
                 comparedValueInput.classList.add('compared-value-input');
                 comparedValueInput.placeholder = "Value";
+                comparedValueInput.name = "floatCriteriaComparedValues[" + idx + "]"
                 container.appendChild(comparedValueInput);
 
                 var deleteButton = document.createElement('button');
@@ -282,10 +303,17 @@
             this.addGroupedBarChartValuePropertyKey = function addGroupedBarChartValuePropertyKey() {
                 var container = document.createElement('div');
 
+                var idx = this.groupedBarChartValuePropertyKeyIndex++;
+                var jsonPropertyNameIndexInput = document.createElement('input');
+                jsonPropertyNameIndexInput.setAttribute('type', 'hidden');
+                jsonPropertyNameIndexInput.name = "groupedBarChartValuePropertyKeys.Index";
+                jsonPropertyNameIndexInput.value = idx.toString();
+                container.appendChild(jsonPropertyNameIndexInput);
+
                 var jsonPropertyNameInput = document.createElement('input');
                 jsonPropertyNameInput.setAttribute('type', 'text');
-                jsonPropertyNameInput.classList.add('json-property-name-input');
                 jsonPropertyNameInput.placeholder = "JSON Property Name";
+                jsonPropertyNameInput.name = "groupedBarChartValuePropertyKeys[" + idx + "]"
                 container.appendChild(jsonPropertyNameInput);
                 
                 var deleteButton = document.createElement('button');

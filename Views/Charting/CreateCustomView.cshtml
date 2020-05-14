@@ -39,7 +39,7 @@
     var floatCriteriaContainerId = "float-criteria-container";
 
     string requiresProjectionAttr(CreateCustomViewModel.SummaryMethodOption opt) {
-        return opt.RequiresProjection ? "projecting" : "categorizing";
+        return opt.SummaryMethod.RequiresProjection ? "projecting" : "categorizing";
     }
 }
 
@@ -68,10 +68,10 @@
     </div>
 
     <div>
-        <select class="selectpicker" id="@summaryMethodSelectId" onchange="model.selectSummaryMethod()" name="summaryMethod">
+        <select class="selectpicker" id="@summaryMethodSelectId" onchange="model.selectSummaryMethod()" name="summaryMethodDescriptor">
             <option value="none" selected>Select summary method</option>
             @foreach (var summaryMethodOption in CreateCustomViewModel.SummaryMethodOptions) {
-                <option value="@summaryMethodOption.SummaryMethod" data-projection-type="@requiresProjectionAttr(summaryMethodOption)">@summaryMethodOption.DisplayName</option>
+                <option value="@summaryMethodOption.SummaryMethod.Descriptor" data-projection-type="@requiresProjectionAttr(summaryMethodOption)">@summaryMethodOption.DisplayName</option>
             }
         </select>
     </div>

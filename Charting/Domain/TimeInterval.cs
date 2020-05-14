@@ -14,4 +14,10 @@ namespace DirectKeyDashboard.Charting.Domain {
             Name = name;
         }
     }
+
+    public enum RelativeTimeGranularity {
+        Day,
+        Month,
+        Year
+    }
 }

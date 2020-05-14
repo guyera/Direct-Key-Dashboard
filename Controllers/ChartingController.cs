@@ -31,11 +31,13 @@ namespace DirectKeyDashboard.Controllers
             if (!_dbContext.CustomBarCharts.Any()) {
                 _dbContext.CustomBarCharts.Add(new CustomBarChart() {
                     Id = Guid.NewGuid(),
-                    Name = "Average OperationDurationMs per device owner",
+                    Title = "Average OperationDurationMs per device owner",
                     ApiEndpoint = "KeyDeviceActivity",
                     ProjectionResult = ProjectionResult.Number,
-                    SummaryMethod = SummaryMethod.Average,
-                    CriterionType = CriterionType.Float,
+                    SummaryMethodDescriptor = SummaryMethodDescriptor.Average,
+                    TimeRelative = false,
+                    RelativeTimeValue = null,
+                    RelativeTimeGranularity = null,
                     FloatCriteria = new List<CustomBarChart.CustomBarChartFloatCriterion>(),
                     IntervalStart = DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
                     IntervalEnd = DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture),
@@ -52,32 +54,77 @@ namespace DirectKeyDashboard.Controllers
             return View();
         }
 
+        public async Task InsertCustomBarChartAsync(string chartTitle, string apiEndpoint, SummaryMethodDescriptor summaryMethodDescriptor,
+                                              ProjectionResult? projectionResult, string categoryPropertyKey, string valuePropertyKey,
+                                              bool timeRelative, int? relativeTimeStartValue,
+                                              RelativeTimeGranularity? relativeTimeStartGranularity, DateTime? absoluteTimeStartDate,
+                                              DateTime? absoluteTimeEndDate, List<string> floatCriteriaJsonPropertyNames,
+                                              List<FloatCriterion.Relation> floatCriteriaRelations, List<float> floatCriteriaComparedValues) {
+            // Construct a list of float criteria from the individual property lists
+            
+            var floatCriteria = new List<CustomBarChart.CustomBarChartFloatCriterion>();
+            if (floatCriteriaJsonPropertyNames.Count == floatCriteriaRelations.Count
+                    && floatCriteriaJsonPropertyNames.Count == floatCriteriaComparedValues.Count) {
+                for (var i = 0; i < floatCriteriaJsonPropertyNames.Count; i++) {
+                    var criterion = new CustomBarChart.CustomBarChartFloatCriterion() {
+                        Key = floatCriteriaJsonPropertyNames[i],
+                        Value = floatCriteriaComparedValues[i],
+                        Relation = floatCriteriaRelations[i]
+                    };
+                }
+            }
+
+            // Construct the chart and put it in the database
+            var chart = new CustomBarChart() {
+                Title = chartTitle,
+                ApiEndpoint = apiEndpoint,
+                SummaryMethodDescriptor = summaryMethodDescriptor,
+                ProjectionResult = projectionResult,
+                CategoryTokenKey = categoryPropertyKey,
+                ValueTokenKey = valuePropertyKey,
+                TimeRelative = timeRelative,
+                RelativeTimeValue = relativeTimeStartValue,
+                RelativeTimeGranularity = relativeTimeStartGranularity,
+                IntervalStart = absoluteTimeStartDate,
+                IntervalEnd = absoluteTimeEndDate,
+                FloatCriteria = floatCriteria
+            };
+
+            await _dbContext.CustomBarCharts.AddAsync(chart);
+            await _dbContext.SaveChangesAsync();
+        }
+
         [HttpPost]
-        public IActionResult CreateCustomView(CreateCustomViewModel.ViewType chartViewType, string chartTitle, string apiEndpoint, SummaryMethod summaryMethod,
-                                              ProjectionResult projectionResult, string groupedBarChartDatasetPropertyKey, string groupedBarChartCategoryPropertyKey,
+        public async Task<IActionResult> CreateCustomView(CreateCustomViewModel.ViewType chartViewType, string chartTitle, string apiEndpoint, 
+                                              SummaryMethodDescriptor summaryMethodDescriptor, ProjectionResult projectionResult,
+                                              string groupedBarChartDatasetPropertyKey, string groupedBarChartCategoryPropertyKey,
                                               List<string> groupedBarChartValuePropertyKeys, string barChartCategoryPropertyKey, string barChartValuePropertyKey,
-                                              bool timeRelative, int relativeTimeStartValue, CreateCustomViewModel.TimeGranularity relativeTimeStartGranularity,
+                                              bool timeRelative, int? relativeTimeStartValue, RelativeTimeGranularity? relativeTimeStartGranularity,
                                               string absoluteTimeStartDate, string absoluteTimeEndDate, List<string> floatCriteriaJsonPropertyNames,
                                               List<FloatCriterion.Relation> floatCriteriaRelations, List<float> floatCriteriaComparedValues) {
-            
-            Console.WriteLine($"View type: {chartViewType}");
-            Console.WriteLine($"Chart title: {chartTitle}");
-            Console.WriteLine($"Api endpoint: {apiEndpoint}");
-            Console.WriteLine($"Summary method: {summaryMethod}");
-            Console.WriteLine($"Projection result: {projectionResult}");
-            Console.WriteLine($"groupedBarChartDatasetPropertyKey: {groupedBarChartDatasetPropertyKey}");
-            Console.WriteLine($"groupedBarChartCategoryPropertyKey: {groupedBarChartCategoryPropertyKey}");
-            Console.WriteLine($"groupedBarChartValuePropertyKeys length: {groupedBarChartValuePropertyKeys.Count}");
-            Console.WriteLine($"barChartCategoryPropertyKey: {barChartCategoryPropertyKey}");
-            Console.WriteLine($"barChartValuePropertyKey: {barChartValuePropertyKey}");
-            Console.WriteLine($"timeRelative: {timeRelative}");
-            Console.WriteLine($"relativeTimeStartValue: {relativeTimeStartValue}");
-            Console.WriteLine($"relativeTimeStartGranularity: {relativeTimeStartGranularity}");
-            Console.WriteLine($"absoluteTimeStartDate: {absoluteTimeStartDate}");
-            Console.WriteLine($"absoluteTimeEndDate: {absoluteTimeEndDate}");
-            Console.WriteLine($"floatCriteriaJsonPropertyNames length: {floatCriteriaJsonPropertyNames.Count}");
-            Console.WriteLine($"floatCriteriaRelations length: {floatCriteriaRelations.Count}");
-            Console.WriteLine($"floatCriteriaComparedValues length: {floatCriteriaComparedValues.Count}");
+            // Attempt to parse date times from datepicker elements if the time is set to an absolute scale
+            DateTime? absoluteTimeStartDateTime = null, absoluteTimeEndDateTime = null;
+            if (!timeRelative) {
+                if (DateTime.TryParseExact(absoluteTimeStartDate, "mm/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var candidate)) {
+                    absoluteTimeStartDateTime = candidate;
+                }
+                
+                if (DateTime.TryParseExact(absoluteTimeEndDate, "mm/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out candidate)) {
+                    absoluteTimeEndDateTime = candidate;
+                }
+            }
+
+            switch (chartViewType) {
+                case CreateCustomViewModel.ViewType.Bar:
+                    await InsertCustomBarChartAsync(chartTitle, apiEndpoint, summaryMethodDescriptor, projectionResult, barChartCategoryPropertyKey,
+                                                    barChartValuePropertyKey, timeRelative, relativeTimeStartValue, relativeTimeStartGranularity,
+                                                    absoluteTimeStartDateTime, absoluteTimeEndDateTime, floatCriteriaJsonPropertyNames,
+                                                    floatCriteriaRelations, floatCriteriaComparedValues);
+                    break;
+                case CreateCustomViewModel.ViewType.GroupedBar:
+
+                    break;
+            }
 
             return RedirectToAction("Index");
         }

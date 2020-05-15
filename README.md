@@ -19,6 +19,10 @@ chmod +x ./private/my_script
 . ./private/my_script
 ```
 
+The DK_API_CERT_PATH should specify a path to the DirectKey API certificate used to access the API. The path should be either absolute or specified relative to the root project directory, from which the project will be run.
+
+In a Windows environment, the environment variables would be set using the operating system's built-in environment variables user interface.
+
 To run the project, execute the command `dotnet run` in the root directory.
 
 ## App Settings ##
@@ -43,8 +47,10 @@ The main setting relevant for changing is `ApplicationDbContext`, a semicolon-se
 }
 ```
 
+Lastly, the file InformationLibraries/DKApiClient specifies the API base address as a constant (```const string ApiAddress = "https://dkintapi.keytest.net/api/ver6/";```). For development purposes, it points to the DKInt API (testing API). For production, it should be changed to the correct API endpoint.
+
 ## Project Dependencies ##
-Here is the list of dependencies for the project:
+Here is the list of dependencies for the project (make sure to install the relevant Nuget packages):
 
 * Json.net
 * Newtonsoft.Json

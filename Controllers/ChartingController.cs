@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Microsoft.EntityFrameworkCore;
 
+// The primary controller used to display and interact with
+// charts.
 namespace DirectKeyDashboard.Controllers
 {
     public class ChartingController : Controller

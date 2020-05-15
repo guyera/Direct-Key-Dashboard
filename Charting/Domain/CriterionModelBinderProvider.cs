@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
+// Used to bind criteria polymorphically.
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class CriterionModelBinderProvider : IModelBinderProvider {

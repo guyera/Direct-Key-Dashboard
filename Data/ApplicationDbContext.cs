@@ -3,6 +3,8 @@ using DirectKeyDashboard.Charting.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
+// The primary context used to store information associated
+// with custom chart descriptors.
 namespace DirectKeyDashboard.Data {
     public class ApplicationDbContext : DbContext {
         private readonly string _connectionString;

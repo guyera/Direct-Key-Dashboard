@@ -1,5 +1,7 @@
 using Newtonsoft.Json.Linq;
 
+// Derives the value of a JSON object given
+// a composite grouped projection and a particular sub-category
 namespace DirectKeyDashboard.Charting.Domain {
     public class CompositeValueProjection<TProjectionValue> : Projection<TProjectionValue>
     {

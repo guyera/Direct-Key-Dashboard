@@ -11,16 +11,16 @@ using Newtonsoft.Json.Linq;
 
 namespace DirectKeyDashboard.Views.Charting
 {
-    // Represents a bar chart which projects data from the API.
-    // The data is filtered by the Filter model supplied,
-    // projected by the GropuedProjection model, and summarized
-    // by the Summary model.
+    // Represents a grouped bar chart which categorizes
+    // but does not project data from the API.
     public class NonProjectingApiGroupedBarChartViewComponent : GroupedBarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public NonProjectingApiGroupedBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer superDatasetCategorizer, PropertyValueCategorizer subDatasetCategorizer, Summary<JObject, float> summary, string drilldownAction, string drilldownController) {
+        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<Criterion> filter, TimeInterval timeInterval,
+                PropertyValueCategorizer superDatasetCategorizer, PropertyValueCategorizer subDatasetCategorizer,
+                Summary<JObject, float> summary, string drilldownAction, string drilldownController) {
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
             var rootObject = JObject.Parse(rawData);
@@ -108,10 +108,14 @@ namespace DirectKeyDashboard.Views.Charting
                     ), // Drilldown data should match the same super- and sub-datasets (filter)
                     summary,
                     timeSeries = new TimeSeries(new List<TimeInterval>() {
-                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     })
                 }).ToList()
             }).ToList();
@@ -122,8 +126,11 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer superDatasetCategorizer, PropertyValueCategorizer subDatasetCategorizer, string drilldownAction, string drilldownController, bool pivot = false) {
-            var barChart = await ProjectChart(filter, timeInterval, superDatasetCategorizer, subDatasetCategorizer, summary, drilldownAction, drilldownController);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> filter,
+                TimeInterval timeInterval, PropertyValueCategorizer superDatasetCategorizer, PropertyValueCategorizer subDatasetCategorizer,
+                string drilldownAction, string drilldownController, bool pivot = false) {
+            var barChart = await ProjectChart(filter, timeInterval, superDatasetCategorizer, subDatasetCategorizer,
+                    summary, drilldownAction, drilldownController);
             return View(pivot ? barChart.Pivot() : barChart);
         }
     }

@@ -1,5 +1,7 @@
 using System;
 
+// For representing a time interval to filter
+// the data to be projected by a chart.
 namespace DirectKeyDashboard.Charting.Domain {
     public class TimeInterval {
         public DateTime Start {get; set;}

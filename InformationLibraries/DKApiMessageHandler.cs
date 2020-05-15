@@ -5,6 +5,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
+// Essentially middleware which configures messages
+// before they are sent to the API, such as
+// by attaching the required certificate.
 namespace InformationLibraries
 {
     public class DKApiMessageHandler : HttpClientHandler

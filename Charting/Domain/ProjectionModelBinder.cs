@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
+
+// Used to bind projections polymorphically, mostly for
+// drilldown charts
 namespace DirectKeyDashboard.Charting.Domain {
     public class ProjectionModelBinder : IModelBinder
     {

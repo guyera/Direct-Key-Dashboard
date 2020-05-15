@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
+// Summarizes a series of data points by computing
+// the median (requires projection to float)
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class MedianSummary : Summary<float, float> {

@@ -1,5 +1,7 @@
 using Newtonsoft.Json.Linq;
 
+// Used to derive the value of a grouped projection
+// (essentially the opposite of CategoryProjection)
 namespace DirectKeyDashboard.Charting.Domain {
     public class ValueProjection<TProjection> : Projection<TProjection>
     {

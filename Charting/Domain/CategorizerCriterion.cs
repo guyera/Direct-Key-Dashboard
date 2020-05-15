@@ -1,5 +1,10 @@
 using Newtonsoft.Json.Linq;
 
+// Used to specify that a JSON object's
+// category must be of a specific value
+// in order to be considered relevant in
+// the chart being projected (used in drilldown
+// charts)
 namespace DirectKeyDashboard.Charting.Domain {
     public class CategorizerCriterion : Criterion {
         public string DesiredCategory {get; set;}

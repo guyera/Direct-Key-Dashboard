@@ -1,5 +1,8 @@
 using Newtonsoft.Json.Linq;
 
+// Used to enforce that objects must have
+// a particular projection value (may no
+// longer be necessary after refactoring.)
 namespace DirectKeyDashboard.Charting.Domain {
     public class ProjectionCriterion<TProjectionValue, TProjection> : Criterion
             where TProjection : Projection<TProjectionValue> {

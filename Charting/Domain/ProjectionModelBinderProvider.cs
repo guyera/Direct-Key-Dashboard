@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
+// Used to bind projections polymorphically, mostly for
+// drilldown charts
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class ProjectionModelBinderProvider : IModelBinderProvider {

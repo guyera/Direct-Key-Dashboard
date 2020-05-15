@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
+// Used to bind criteria polymorphically
 namespace DirectKeyDashboard.Charting.Domain {
     public class CriterionModelBinder : IModelBinder
     {

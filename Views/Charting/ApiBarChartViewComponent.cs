@@ -20,7 +20,8 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public ApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection, string drilldownController, string drilldownAction) {
+        protected virtual async Task<BarChart> ProjectChart(Summary<TProjection, float> summary, Filter<Criterion> filter,
+                TimeInterval timeInterval, GroupedProjection<TProjection> projection, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -76,16 +77,23 @@ namespace DirectKeyDashboard.Views.Charting
                 DrilldownQueryParameters = new {
                     summary, // Summarize drilldown data in the same way
                     preFilter = filter,
-                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection>>>(new List<ProjectionCriterion<string, CategoryProjection<TProjection>>>() { // Match data with the same category / key as this bar
-                        new ProjectionCriterion<string, CategoryProjection<TProjection>>(new CategoryProjection<TProjection>(projection), s.Key)
+                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection>>>(
+                        new List<ProjectionCriterion<string, CategoryProjection<TProjection>>>() { // Match data with the same category / key as this bar
+                            new ProjectionCriterion<string, CategoryProjection<TProjection>>(new CategoryProjection<TProjection>(projection), s.Key)
                     }),
                     timeSeries = new TimeSeries(new List<TimeInterval>() {
-                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     }),
-                    projection = new ValueProjection<TProjection>(projection) // Project drilldown data in the same way, but only project the value, not the key / value pair (since all keys / categories are the same in a single drilldown chart)
+                    // Project drilldown data in the same way, but only project the value,
+                    // not the key / value pair (since all keys / categories are the same in a single drilldown chart)
+                    projection = new ValueProjection<TProjection>(projection)
                 }
             }).ToList();
 
@@ -95,7 +103,9 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection, string drilldownController, string drilldownAction) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary,
+                Filter<Criterion> filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection,
+                string drilldownController, string drilldownAction) {
             var barChart = await ProjectChart(summary, filter, timeInterval, projection, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
         }

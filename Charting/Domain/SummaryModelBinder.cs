@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
+// For polymorphic model binding of summaries, mostly for
+// drilldown charts
 namespace DirectKeyDashboard.Charting.Domain {
     public class SummaryModelBinder : IModelBinder
     {

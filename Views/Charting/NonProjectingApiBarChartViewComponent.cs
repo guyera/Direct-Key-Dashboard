@@ -19,7 +19,8 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public NonProjectingApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
+        protected virtual async Task<BarChart> ProjectChart(Summary<JObject, float> summary, Filter<Criterion> filter,
+                TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -82,10 +83,14 @@ namespace DirectKeyDashboard.Views.Charting
                         }
                     },
                     timeSeries = new TimeSeries(new List<TimeInterval>() {
-                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     })
                 }
             }).ToList();
@@ -96,7 +101,8 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> filter,
+                TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
             var barChart = await ProjectChart(summary, filter, timeInterval, categorizer, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
         }

@@ -1,5 +1,7 @@
 using Newtonsoft.Json.Linq;
 
+// Used with a filter to filter out data points (JObjects) which
+// do not satisfy this criterion
 namespace DirectKeyDashboard.Charting.Domain
 {
     public abstract class Criterion {

@@ -1,5 +1,10 @@
 using Newtonsoft.Json.Linq;
 
+// Projects a JObject into a more specific, funneled
+// type (T). The most common type of projection
+// is a simple selection, e.g. select the floating
+// point property titled "OperationCommDurationMs" out
+// of this JObject (that would be a SimpleProjection<float>).
 namespace DirectKeyDashboard.Charting.Domain {
     public abstract class Projection<T> {
         public string SubtypeName {get; set;}

@@ -4,9 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 
-// using System.Globalization;
-
-
+// Public facing, dependency-injected service
+// used to retrieve data from the API. Base endpoint
+// specified in DKApiClient.
 namespace InformationLibraries {
     // DKApiAccess is an injected singleton wrapped around
     // a DKApiClient used to communicate with the API.

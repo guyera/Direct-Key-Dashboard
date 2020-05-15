@@ -1,6 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
+// For polymorphic model binding of summaries, mostly for
+// drilldown charts
 namespace DirectKeyDashboard.Charting.Domain
 {
     public class SummaryModelBinderProvider : IModelBinderProvider {

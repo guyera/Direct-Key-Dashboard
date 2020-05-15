@@ -1,5 +1,8 @@
 using Newtonsoft.Json.Linq;
 
+// Used to categorize a JObject based on the
+// value of a particular JSON property, such
+// as the value of the OperationDescription property.
 namespace DirectKeyDashboard.Charting.Domain {
     public class PropertyValueCategorizer : Categorizer
     {

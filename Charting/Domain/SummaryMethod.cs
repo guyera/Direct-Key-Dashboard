@@ -1,3 +1,7 @@
+// Enum representation of a summary for storage / reference
+// in a database entity (such as a CustomBarChart). Also
+// determines whether or not the summary requires a projection
+// into a number beforehand
 namespace DirectKeyDashboard.Charting.Domain {
     public class SummaryMethod {
         public SummaryMethodDescriptor Descriptor {get; set;}

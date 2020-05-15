@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 
+// Summarizes / aggregates a series of datapoints into
+// a displayable value, such as an average,
+// median, or count
 namespace DirectKeyDashboard.Charting.Domain
 {
     public abstract class Summary<TIn, TOut> {

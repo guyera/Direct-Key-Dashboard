@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+// Used to cache responses from the API.
 namespace InformationLibraries
 {
     public class Storage 

@@ -1,4 +1,4 @@
-// A model for a full bar chart to be displayed via a
+// A model for a full line chart to be displayed via a
 // ViewComponent
 
 using System.Collections.Generic;

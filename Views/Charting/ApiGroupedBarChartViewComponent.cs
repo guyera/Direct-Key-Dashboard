@@ -20,7 +20,9 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public ApiGroupedBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<Criterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary, string drilldownAction, string drilldownController) {
+        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<Criterion> filter, TimeInterval timeInterval,
+                CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary,
+                string drilldownAction, string drilldownController) {
             Console.WriteLine($"Filter count: {filter.Criteria?.Count() ?? 0}");
             Console.WriteLine($"Time interval: {timeInterval.Start} to {timeInterval.End}");
             Console.WriteLine($"Projection: {projection}");
@@ -125,10 +127,14 @@ namespace DirectKeyDashboard.Views.Charting
                     ), // Drilldown data should match the same dataset (filter)
                     summary,
                     timeSeries = new TimeSeries(new List<TimeInterval>() {
-                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
-                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
-                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
-                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
+                            new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
+                            new TimeInterval(DateTime.ParseExact("2019-07-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-07-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "July"),
+                            new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
+                            new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                                DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     }),
                     projection = new CompositeValueProjection<TProjection>(projection, subLabel)
                 }).ToList()
@@ -140,7 +146,9 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, string drilldownAction, string drilldownController, bool pivot = false) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> filter,
+                TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, string drilldownAction,
+                string drilldownController, bool pivot = false) {
             var barChart = await ProjectChart(filter, timeInterval, projection, summary, drilldownAction, drilldownController);
             return View(pivot ? barChart.Pivot() : barChart);
         }

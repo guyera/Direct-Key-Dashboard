@@ -1,7 +1,12 @@
 ﻿using DirectKeyDashboard.Charting.Domain;
 
+// Page model for CreateCustomView.cshtml.
+// Stores enumerables of enums, such as
+// possible summary options, for dropdown
+// boxes.
 namespace DirectKeyDashboard.Views.Charting {
     public class CreateCustomViewModel {
+        // Chart view types dropdown
         public static ViewTypeOption[] ViewOptions {get; set;} = {
             new ViewTypeOption{
                 DisplayName = "Bar Chart",
@@ -13,6 +18,7 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
+        // Summary methods dropdown
         public static SummaryMethodOption[] SummaryMethodOptions {get; set;} = {
             new SummaryMethodOption{
                 DisplayName = "Average",
@@ -28,6 +34,7 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
+        // Projection type options dropdown
         public static ProjectionResultOption[] ProjectionResultOptions {get; set;} = {
             new ProjectionResultOption{
                 DisplayName = "Number",
@@ -35,6 +42,7 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
+        // Time granularities dropdown
         public static TimeGranularityOption[] TimeGranularityOptions {get; set;} = {
             new TimeGranularityOption{
                 DisplayName = "Days",
@@ -50,6 +58,7 @@ namespace DirectKeyDashboard.Views.Charting {
             }
         };
 
+        // Float criteria relations dropdown (e.g. = vs < vs >...)
         public static FloatCriterionRelationOption[] FloatCriterionRelationOptions {get; set;} = {
             new FloatCriterionRelationOption{
                 DisplayName = "=",

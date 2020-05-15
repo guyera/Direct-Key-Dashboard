@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
+// The initial implementation of grouped bar chart
+// projections. It requires a property / token key
+// to determine what dataset the object should
+// be classified as, as well as a series of
+// tokens to specify each category (x-axis label)
+// which the object should contribute to, and how (through
+// simple selection)
 namespace DirectKeyDashboard.Charting.Domain {
     public class SimpleCompositeGroupedProjection<TProjection> : CompositeGroupedProjection<TProjection>
     {
@@ -9,7 +16,8 @@ namespace DirectKeyDashboard.Charting.Domain {
 
         // For model binding
         public SimpleCompositeGroupedProjection() : base(typeof(SimpleCompositeGroupedProjection<TProjection>).FullName){}
-        public SimpleCompositeGroupedProjection(string datasetKeyToken, IList<string> categoryKeyTokens) : base(typeof(SimpleCompositeGroupedProjection<TProjection>).FullName) {
+        public SimpleCompositeGroupedProjection(string datasetKeyToken, IList<string> categoryKeyTokens)
+                : base(typeof(SimpleCompositeGroupedProjection<TProjection>).FullName) {
             DatasetKeyToken = datasetKeyToken;
             CategoryKeyTokens = categoryKeyTokens;
         }

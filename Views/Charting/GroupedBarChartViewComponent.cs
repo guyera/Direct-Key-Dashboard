@@ -3,6 +3,10 @@ using DirectKeyDashboard.Charting.Domain;
 using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 
+// Abstract base class used to represent grouped bar charts,
+// including some helper functions.
+
+// TODO Refactor helper functions
 namespace DirectKeyDashboard.Views.Charting
 {
     // Creates a test bar chart

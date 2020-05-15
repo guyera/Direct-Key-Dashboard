@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace DirectKeyDashboard.Charting.Domain {
+namespace DirectKeyDashboard.Charting.Domain
+{
     // CustomBarChart represents a custom-built single-
     // grouped bar chart. 
     public class CustomBarChart {
         public Guid Id {get; set;}
-        public string Name {get; set;}
+        public string Title {get; set;}
         
         // Endpoint from which to retrieve the data
         // to be parsed. For now, assume the data
@@ -19,40 +19,26 @@ namespace DirectKeyDashboard.Charting.Domain {
         // ProjectionResult represents the type of data
         // being projected, such as strings (for count summaries)
         // or numbers (for numerical summaries like averages)
-        public ProjectionResult ProjectionResult {get; set;}
+        public ProjectionResult? ProjectionResult {get; set;}
 
-        // SummaryMethod represents the type of summary performed,
+        // SummaryMethodDescriptor represents the type of summary performed,
         // such as a count vs an average
-        public SummaryMethod SummaryMethod {get; set;}
+        public SummaryMethodDescriptor SummaryMethodDescriptor {get; set;}
 
-        // CriterionType represents the type of criterion used
-        // to filter out unwanted datapoints. ProjectionCriteria
-        // are simple criteria which just check to see if
-        // some projected value is equal to (.equals()) a
-        // predetermined value. FloatCriteria allow for comparing
-        // numerical values (<, >, <=, >=, ==, !=). ProjectionCriteria
-        // are mostly used for drilldown charts (e.g. show me all
-        // of the data associated with the object whose operation code
-        // has a value of "01"). FloatCriteria are used, for example,
-        // to distinguish between quick-connect operations (user intent duration
-        // ms != 0) and non-quick-connect operations (user intent duration
-        // ms == 0).
-        public CriterionType CriterionType {get; set;}
-
-        // This gets a little messy. Since there's no easy way to represent
-        // generic types in relational databases, each custom bar chart
-        // can have many FloatCriteria and ProjectionCriterionModels
-        // associated with it. However, there should only be one or the other;
-        // there should be be both types of criteria associated with the
-        // custom bar chart. The type of criteria which does exist (if any)
-        // should match the CriterionType field.
         public IList<CustomBarChartFloatCriterion> FloatCriteria {get; set;}
         
+        // Determines whether this chart's time interval is relative to the present
+        // (true) or absolute (false)
+        public bool TimeRelative {get; set;}
 
-        // Start and end times for the window of data to be projected
-        // and summarized
-        public DateTime IntervalStart {get; set;}
-        public DateTime IntervalEnd {get; set;}
+        /* For intervals relative to the present, the following fields
+           describe how to construct the time interval */
+        public int? RelativeTimeValue {get; set;}
+        public RelativeTimeGranularity? RelativeTimeGranularity {get; set;}
+
+        /* For absolute time intervals, these mark the start and end points */
+        public DateTime? IntervalStart {get; set;}
+        public DateTime? IntervalEnd {get; set;}
         
         // CategoryTokenKey denotes the name of the JSON property
         // which represents the data point's category (x-axis)
@@ -82,17 +68,7 @@ namespace DirectKeyDashboard.Charting.Domain {
             public FloatCriterion.Relation Relation {get; set;}
         }
     }
-
-    // An enumeration of possible criterion types for
-    // custom bar charts. Currently supports float criteria.
-    // TODO Support string criteria.
-    // TODO Remove the notion of "ProjectionCriteria". All
-    // data should be represented as numbers or strings.
-    // Prefer "StringCriteria".
-    // Reasoning:
-    // It is very difficult to work with highly abstract
-    // types, especially when we need to store them and
-    // serialize them.
+    
     public enum CriterionType {
         Float
     }

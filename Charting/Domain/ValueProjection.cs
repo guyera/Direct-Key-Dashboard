@@ -1,14 +1,13 @@
 using Newtonsoft.Json.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
-    public class ValueProjection<TProjection, TGroupedProjection> : Projection<TProjection>
-        where TGroupedProjection : GroupedProjection<TProjection>
+    public class ValueProjection<TProjection> : Projection<TProjection>
     {
-        public TGroupedProjection UnderlyingProjection {get; set;}
+        public GroupedProjection<TProjection> UnderlyingProjection {get; set;}
         
         // For model binding
-        public ValueProjection() : base(typeof(ValueProjection<TProjection, TGroupedProjection>).FullName){}
-        public ValueProjection(TGroupedProjection projection) : base(typeof(ValueProjection<TProjection, TGroupedProjection>).FullName) {
+        public ValueProjection() : base(typeof(ValueProjection<TProjection>).FullName){}
+        public ValueProjection(GroupedProjection<TProjection> projection) : base(typeof(ValueProjection<TProjection>).FullName) {
             UnderlyingProjection = projection;
         }
         public override TProjection Project(JObject jsonObject)

@@ -30,17 +30,15 @@ namespace DirectKeyDashboard.Views.Charting
     // The data is filtered by the Filter model supplied,
     // projected by the Projection model, and summarized
     // by the Summary model.
-    public class ApiLineChartViewComponent<TProjection, TPreCriterion, TCriterion> : LineChartViewComponent
-            where TPreCriterion : Criterion
-            where TCriterion : Criterion {
+    public class ApiLineChartViewComponent<TProjection> : LineChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiLineChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<LineChart> ProjectChart(Filter<TPreCriterion> preFilter, LineChartContext ctx, Projection<TProjection> projection, Summary<TProjection, float> summary) {
+        protected virtual async Task<LineChart> ProjectChart(Summary<TProjection, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries, Projection<TProjection> projection) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
-            foreach (var interval in ctx.TimeSeries.TimeIntervals) {
+            foreach (var interval in timeSeries.TimeIntervals) {
                 var rawData = await apiAccess.PullKeyDeviceActivity(interval.Start, interval.End);
                 // Parse string to JObject
                 var rootObject = JObject.Parse(rawData);
@@ -57,12 +55,12 @@ namespace DirectKeyDashboard.Views.Charting
                     Console.WriteLine("Prefilter is null");
                 else if (preFilter.Criteria == null)
                     Console.WriteLine("Prefilter criteria is null");
-                if (ctx.Filter == null)
+                if (filter == null)
                     Console.WriteLine("Filter is null");
-                else if (ctx.Filter.Criteria == null)
+                else if (filter.Criteria == null)
                     Console.WriteLine("Filter criteria is null");
                 dataArray = preFilter.FilterData(dataArray);
-                dataArray = ctx.Filter.FilterData(dataArray);
+                dataArray = filter.FilterData(dataArray);
 
                 // Project each token to a value
                 var projectedData = new Collection<TProjection>();
@@ -93,23 +91,13 @@ namespace DirectKeyDashboard.Views.Charting
                         PointColor = "hsla(0, 100%, 50%, 0.3)"
                     }
                 },
-                CategoryLabels = ctx.TimeSeries.TimeIntervals.Select(f => f.Name).ToList()
+                CategoryLabels = timeSeries.TimeIntervals.Select(f => f.Name).ToList()
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Filter<TPreCriterion> preFilter, Summary<TProjection, float> summary, Filter<TCriterion> filter, TimeSeries timeSeries, Projection<TProjection> projection) {
-            var lineChart = await ProjectChart(preFilter, new LineChartContext(filter, timeSeries), projection, summary);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries, Projection<TProjection> projection) {
+            var lineChart = await ProjectChart(summary, preFilter, filter, timeSeries, projection);
             return await Task.Run(() => View(lineChart));
-        }
-
-        protected class LineChartContext {
-            public Filter<TCriterion> Filter {get;}
-            public TimeSeries TimeSeries {get;}
-
-            public LineChartContext(Filter<TCriterion> filter, TimeSeries timeSeries) {
-                Filter = filter;
-                TimeSeries = timeSeries;
-            }
         }
     }
 }

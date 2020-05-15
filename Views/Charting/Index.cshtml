@@ -1,4 +1,4 @@
-﻿@model List<CustomBarChart>
+﻿@model IndexModel
 
 @using DirectKeyDashboard.Views.Charting
 @using DirectKeyDashboard.Charting.Domain
@@ -10,9 +10,14 @@
 
 <div class="text-center">
     @{
-        foreach (var customBarChart in Model) {
+        foreach (var customBarChart in Model.CustomBarCharts) {
             var url = Url.Action("CustomBarChartView", "Charting", new { id = customBarChart.Id });
-            <a href="@Html.Raw(url)">customBarChart.Name</a>
+            <a href="@Html.Raw(url)">@customBarChart.Title</a>
+        }
+
+        foreach (var customGroupedBarChart in Model.CustomGroupedBarCharts) {
+            var url = Url.Action("CustomGroupedBarChartView", "Charting", new { id = customGroupedBarChart.Id });
+            <a href="@Html.Raw(url)">@customGroupedBarChart.Title</a>
         }
     }
 </div>

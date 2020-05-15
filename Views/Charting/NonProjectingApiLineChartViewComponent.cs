@@ -33,7 +33,7 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public NonProjectingApiLineChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<LineChart> ProjectChart(Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries, Summary<JObject, float> summary) {
+        protected virtual async Task<LineChart> ProjectChart(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries) {
             // For each time interval, add a datum to the dataset
             var vertices = new List<Vertex>();
             foreach (var interval in timeSeries.TimeIntervals) {
@@ -73,8 +73,8 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(Filter<Criterion> preFilter, Filter<Criterion> filter, Summary<JObject, float> summary, TimeSeries timeSeries) {
-            var lineChart = await ProjectChart(preFilter, filter, timeSeries, summary);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> preFilter, Filter<Criterion> filter, TimeSeries timeSeries) {
+            var lineChart = await ProjectChart(summary, preFilter, filter, timeSeries);
             return await Task.Run(() => View(lineChart));
         }
     }

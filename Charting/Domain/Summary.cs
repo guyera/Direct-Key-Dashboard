@@ -20,12 +20,4 @@ namespace DirectKeyDashboard.Charting.Domain
     {
         public Summary (string subtypeName) : base(subtypeName) {}
     }
-
-    // An enumeration of possible summary methods.
-    // Count and Average are currently supported.
-    public enum SummaryMethod {
-        Count,
-        Average,
-        Median
-    }
 }

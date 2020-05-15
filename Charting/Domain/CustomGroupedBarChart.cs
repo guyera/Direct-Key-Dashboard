@@ -7,7 +7,7 @@ namespace DirectKeyDashboard.Charting.Domain
     // grouped bar chart. 
     public class CustomGroupedBarChart {
         public Guid Id {get; set;}
-        public string Name {get; set;}
+        public string Title {get; set;}
         
         // Endpoint from which to retrieve the data
         // to be parsed. For now, assume the data
@@ -19,54 +19,50 @@ namespace DirectKeyDashboard.Charting.Domain
         // ProjectionResult represents the type of data
         // being projected, such as strings (for count summaries)
         // or numbers (for numerical summaries like averages)
-        public ProjectionResult ProjectionResult {get; set;}
+        public ProjectionResult? ProjectionResult {get; set;}
 
         // SummaryMethod represents the type of summary performed,
         // such as a count vs an average
-        public SummaryMethod SummaryMethod {get; set;}
-
-        // TODO Remove CriterionType, and allow filters to accept
-        // criteria polymorphically. It will lead to some difficulties
-        // when serializing drilldown charts that have polymorphic
-        // members, but it is certainly possible to serialize
-        // polymorphic objects, so why not?
-
-        // CriterionType represents the type of criterion used
-        // to filter out unwanted datapoints. ProjectionCriteria
-        // are simple criteria which just check to see if
-        // some projected value is equal to (.equals()) a
-        // predetermined value. FloatCriteria allow for comparing
-        // numerical values (<, >, <=, >=, ==, !=). ProjectionCriteria
-        // are mostly used for drilldown charts (e.g. show me all
-        // of the data associated with the object whose operation code
-        // has a value of "01"). FloatCriteria are used, for example,
-        // to distinguish between quick-connect operations (user intent duration
-        // ms != 0) and non-quick-connect operations (user intent duration
-        // ms == 0).
-        public CriterionType CriterionType {get; set;}
+        public SummaryMethodDescriptor SummaryMethodDescriptor {get; set;}
 
         // This represents the floating point / number criteria associated
         // with this chart (e.g. only project data with a DurationMs property greater than 0)
         public IList<CustomGroupedBarChartFloatCriterion> FloatCriteria {get; set;}
         
+        // Determines whether this chart's time interval is relative to the present
+        // (true) or absolute (false)
+        public bool TimeRelative {get; set;}
 
-        // Start and end times for the window of data to be projected
-        // and summarized
-        public DateTime IntervalStart {get; set;}
-        public DateTime IntervalEnd {get; set;}
+        /* For intervals relative to the present, the following fields
+           describe how to construct the time interval */
+        public int? RelativeTimeValue {get; set;}
+        public RelativeTimeGranularity? RelativeTimeGranularity {get; set;}
+
+        /* For absolute time intervals, these mark the start and end points */
+        public DateTime? IntervalStart {get; set;}
+        public DateTime? IntervalEnd {get; set;}
         
         // SuperDatasetCategoryTokenKey denotes the name of the JSON property
         // which represents the data point's super dataset
-        public string SuperDatasetCategoryTokenKey {get; set;}
+        public string DatasetTokenKey {get; set;}
+
+        // This is one option for sub-categorization. The other is by
+        // providing multiple value token keys, wherein each JObject
+        // contributes to every x-axis label through different properties.
+        // Currently, CategoryTokenKeys are only supported for
+        // non-projecting grouped bar charts.
+        public string CategoryTokenKey {get; set;}
 
         // ValueTokenKeys denotes the names of the JSON properties
-        // which represent the data point's values (y-axis).
+        // which represent the data point's values (y-axis). By
+        // having multiple y-axis sources, each JObject contributes
+        // to every x-axis label.
         // The type of the property should match what is
         // depicted by this chart model's ProjectionResult.
         // It should be a string (for count summaries only),
         // or it should be a number (for numerical summaries,
         // like average).
-        public List<CustomGroupedBarChartValueTokenKeys> ValueTokenKeys {get; set;}
+        public IList<CustomGroupedBarChartValueTokenKey> ValueTokenKeys {get; set;}
 
         // Pivoting a grouped bar chart refers to switching the x
         // axis with the sub-groupings. Normally, the X-axis
@@ -78,7 +74,7 @@ namespace DirectKeyDashboard.Charting.Domain
 
         public CustomGroupedBarChart() {}
 
-        public class CustomGroupedBarChartValueTokenKeys {
+        public class CustomGroupedBarChartValueTokenKey {
             public Guid Id {get; set;}
             public Guid CustomGroupedBarChartId {get; set;}
             public CustomGroupedBarChart CustomGroupedBarChart {get; set;}

@@ -3,14 +3,16 @@ using System;
 using DirectKeyDashboard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DirectKeyDashboard.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200515165118_UpdateCustomGroupedBarChartRelationships")]
+    partial class UpdateCustomGroupedBarChartRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,7 +160,7 @@ namespace DirectKeyDashboard.Migrations
                     b.ToTable("GroupedBarChartFloatCriteria");
                 });
 
-            modelBuilder.Entity("DirectKeyDashboard.Charting.Domain.CustomGroupedBarChart+CustomGroupedBarChartValueTokenKey", b =>
+            modelBuilder.Entity("DirectKeyDashboard.Charting.Domain.CustomGroupedBarChart+CustomGroupedBarChartValueTokenKeys", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,7 +197,7 @@ namespace DirectKeyDashboard.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DirectKeyDashboard.Charting.Domain.CustomGroupedBarChart+CustomGroupedBarChartValueTokenKey", b =>
+            modelBuilder.Entity("DirectKeyDashboard.Charting.Domain.CustomGroupedBarChart+CustomGroupedBarChartValueTokenKeys", b =>
                 {
                     b.HasOne("DirectKeyDashboard.Charting.Domain.CustomGroupedBarChart", "CustomGroupedBarChart")
                         .WithMany("ValueTokenKeys")

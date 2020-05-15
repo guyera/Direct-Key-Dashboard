@@ -28,7 +28,7 @@ namespace DirectKeyDashboard.Charting.Domain {
             // Get each category value by their keys and construct
             // a dictionary relating the key tokens to the values
             IDictionary<string, TProjection> valueDictionary = new Dictionary<string, TProjection>();
-            foreach (var categoryKeyToken in CategoryKeyTokens) {
+            foreach (var categoryKeyToken in CategoryKeyTokens ?? new List<string>()) {
                 // Get token associated with this category key property
                 // If it doesn't have the property / the property is
                 // null, throw an exception. Such objects should

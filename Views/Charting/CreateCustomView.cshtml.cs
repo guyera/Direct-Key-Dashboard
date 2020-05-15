@@ -16,17 +16,14 @@ namespace DirectKeyDashboard.Views.Charting {
         public static SummaryMethodOption[] SummaryMethodOptions {get; set;} = {
             new SummaryMethodOption{
                 DisplayName = "Average",
-                RequiresProjection = true,
                 SummaryMethod = SummaryMethod.Average
             },
             new SummaryMethodOption{
                 DisplayName = "Median",
-                RequiresProjection = true,
                 SummaryMethod = SummaryMethod.Median
             },
             new SummaryMethodOption{
                 DisplayName = "Count",
-                RequiresProjection = false,
                 SummaryMethod = SummaryMethod.Count
             }
         };
@@ -41,15 +38,15 @@ namespace DirectKeyDashboard.Views.Charting {
         public static TimeGranularityOption[] TimeGranularityOptions {get; set;} = {
             new TimeGranularityOption{
                 DisplayName = "Days",
-                TimeGranularity = TimeGranularity.Day
+                TimeGranularity = RelativeTimeGranularity.Day
             },
             new TimeGranularityOption{
                 DisplayName = "Months",
-                TimeGranularity = TimeGranularity.Month
+                TimeGranularity = RelativeTimeGranularity.Month
             },
             new TimeGranularityOption{
                 DisplayName = "Years",
-                TimeGranularity = TimeGranularity.Year
+                TimeGranularity = RelativeTimeGranularity.Year
             }
         };
 
@@ -92,7 +89,6 @@ namespace DirectKeyDashboard.Views.Charting {
 
         public class SummaryMethodOption {
             public string DisplayName {get; set;}
-            public bool RequiresProjection {get; set;}
             public SummaryMethod SummaryMethod;
         }
 
@@ -101,15 +97,9 @@ namespace DirectKeyDashboard.Views.Charting {
             public ProjectionResult ProjectionResult {get; set;}
         }
 
-        public enum TimeGranularity {
-            Day,
-            Month,
-            Year
-        }
-
         public class TimeGranularityOption {
             public string DisplayName {get; set;}
-            public TimeGranularity TimeGranularity {get; set;}
+            public RelativeTimeGranularity TimeGranularity {get; set;}
         }
 
         public class FloatCriterionRelationOption {

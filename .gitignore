@@ -1,6 +1,9 @@
 bin/
 obj/
 private/
+appsettings.json
+DirectKeyDashboard.csproj
+.vscode
 .vs/slnx.sqlite
 .vs/Direct-Key-Dashboard/v16/.suo
 .vs/VSWorkspaceState.json

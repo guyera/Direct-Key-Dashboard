@@ -1,6 +1,9 @@
 # README #
 
 ## Running on Command Line ##
+
+Note: This project can only be run with the required API certificates and passwords to access the DirectKey testing or production APIs.
+
 Prior to running the project, a few environment variables must be set: 
 *DK_API_USERNAME, DK_API_PASSWORD, DK_API_CERT_PATH,* and *DK_API_CERT_PASS*
 

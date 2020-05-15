@@ -19,7 +19,7 @@ namespace DirectKeyDashboard.Views.Charting
         // this view component can access the API
         public NonProjectingApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(PropertyValueCategorizer categorizer, Filter<Criterion> filter, TimeInterval timeInterval, Summary<JObject, float> summary, string drilldownController, string drilldownAction) {
+        protected virtual async Task<BarChart> ProjectChart(Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -96,8 +96,8 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(PropertyValueCategorizer categorizer, Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, string drilldownController, string drilldownAction) {
-            var barChart = await ProjectChart(categorizer, filter, timeInterval, summary, drilldownController, drilldownAction);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<JObject, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, PropertyValueCategorizer categorizer, string drilldownController, string drilldownAction) {
+            var barChart = await ProjectChart(summary, filter, timeInterval, categorizer, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
         }
     }

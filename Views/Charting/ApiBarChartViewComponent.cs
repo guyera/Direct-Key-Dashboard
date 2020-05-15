@@ -9,39 +9,20 @@ using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-/* TODO Reduce the generics used and increase polymorphism in its place.
-    e.g. instead of requiring TSummary as a generic type parameter,
-    simply accept Summary<TProjection, float> as an invocation argument. 
-    The only reason to use generics and generic type constraints enforcing
-    inheritance is to allow more flexibility with the type. e.g. IList<Dog>
-    is not substitutable for IList<Animal> (though covariance IS allowed with
-    classes, just not interfaces), or to guarantee that types match in certain
-    locations (e.g. the summary takes as an argument a list of the same type which the
-    projection produces). However, I do not need such flexibility, nor do I need
-    such constraints with summaries, projections, or criteria. The only
-    real case for generics here is TProjection (which should probably
-    be named to TProjectionValue, as it represents the type of the thing
-    which is projected, not the type of the projection itself), for the
-    reason mentioned (summary must be able to summarize the type of thing
-    which was projected)  */
-
 namespace DirectKeyDashboard.Views.Charting
 {
     // Represents a bar chart which projects data from the API.
     // The data is filtered by the Filter model supplied,
     // projected by the GropuedProjection model, and summarized
     // by the Summary model.
-    public abstract class ApiBarChartViewComponent<TProjection, TSummary, TGroupedProjection, TCriterion> : BarChartViewComponent
-            where TSummary : Summary<TProjection, float>
-            where TGroupedProjection : GroupedProjection<TProjection>
-            where TCriterion : Criterion {
+    public abstract class ApiBarChartViewComponent<TProjection> : BarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<BarChart> ProjectChart(BarChartContext ctx, TGroupedProjection projection, TSummary summary, string drilldownController, string drilldownAction) {
+        protected virtual async Task<BarChart> ProjectChart(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection, string drilldownController, string drilldownAction) {
             // For each time interval, add a datum to the dataset
-            var rawData = await apiAccess.PullKeyDeviceActivity(ctx.TimeInterval.Start, ctx.TimeInterval.End);
+            var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
             var rootObject = JObject.Parse(rawData);
             if (!rootObject.TryGetValue("Data", out var dataArrayToken)) {
@@ -51,7 +32,7 @@ namespace DirectKeyDashboard.Views.Charting
             // Convert data array token to JEnumerable and
             // filter out unwanted data
             var dataArray = dataArrayToken.AsJEnumerable();
-            dataArray = ctx.Filter.FilterData(dataArray);
+            dataArray = filter.FilterData(dataArray);
 
             // Project each token to a value, and store
             // the value in the associated category's
@@ -94,9 +75,9 @@ namespace DirectKeyDashboard.Views.Charting
                 DrilldownAction = drilldownAction,
                 DrilldownQueryParameters = new {
                     summary, // Summarize drilldown data in the same way
-                    preFilter = ctx.Filter,
-                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>(new List<ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>>() { // Match data with the same category / key as this bar
-                        new ProjectionCriterion<string, CategoryProjection<TProjection, TGroupedProjection>>(new CategoryProjection<TProjection, TGroupedProjection>(projection), s.Key)
+                    preFilter = filter,
+                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<TProjection>>>(new List<ProjectionCriterion<string, CategoryProjection<TProjection>>>() { // Match data with the same category / key as this bar
+                        new ProjectionCriterion<string, CategoryProjection<TProjection>>(new CategoryProjection<TProjection>(projection), s.Key)
                     }),
                     timeSeries = new TimeSeries(new List<TimeInterval>() {
                             new TimeInterval(DateTime.ParseExact("2019-06-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-06-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "June"),
@@ -104,7 +85,7 @@ namespace DirectKeyDashboard.Views.Charting
                             new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
                             new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     }),
-                    projection = new ValueProjection<TProjection, TGroupedProjection>(projection) // Project drilldown data in the same way, but only project the value, not the key / value pair (since all keys / categories are the same in a single drilldown chart)
+                    projection = new ValueProjection<TProjection>(projection) // Project drilldown data in the same way, but only project the value, not the key / value pair (since all keys / categories are the same in a single drilldown chart)
                 }
             }).ToList();
 
@@ -114,18 +95,9 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(TSummary summary, Filter<TCriterion> filter, TimeInterval timeInterval, TGroupedProjection projection, string drilldownController, string drilldownAction) {
-            var barChart = await ProjectChart(new BarChartContext(filter, timeInterval), projection, summary, drilldownController, drilldownAction);
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, GroupedProjection<TProjection> projection, string drilldownController, string drilldownAction) {
+            var barChart = await ProjectChart(summary, filter, timeInterval, projection, drilldownController, drilldownAction);
             return await Task.Run(() => View(barChart));
-        }
-
-        protected class BarChartContext {
-            public Filter<TCriterion> Filter {get;}
-            public TimeInterval TimeInterval {get;}
-            public BarChartContext(Filter<TCriterion> filter, TimeInterval timeInterval) {
-                Filter = filter;
-                TimeInterval = timeInterval;
-            }
         }
     }
 }

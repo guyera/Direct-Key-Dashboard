@@ -2,6 +2,7 @@
 
 @using DirectKeyDashboard.Views.Charting
 @using DirectKeyDashboard.Charting.Domain
+@using Newtonsoft.Json.Linq
 
 @{
     ViewData["Title"] = "Custom Bar Chart View";
@@ -25,55 +26,44 @@
         intervalStart = Model.IntervalStart.Value;
         intervalEnd = Model.IntervalEnd.Value;
     }
+
+    Summary<JObject, float> nonProjectingSummary = null;
+    Summary<float, float> numberProjectingSummary = null;
+    switch (Model.SummaryMethodDescriptor) {
+        case SummaryMethodDescriptor.Count:
+            nonProjectingSummary = new CountSummary<JObject>();
+            break;
+        case SummaryMethodDescriptor.Average:
+            numberProjectingSummary = new AverageSummary();
+        break;
+        case SummaryMethodDescriptor.Median:
+            numberProjectingSummary = new MedianSummary();
+        break;
+    }
 }
 
 <div class="text-center">
     
     <div id="dynamic-chart-container" style="display: flex; flex-direction: column; width: 100%; align-items: center;">
         @{
-            switch (Model.SummaryMethodDescriptor) {
-                case SummaryMethodDescriptor.Count:
-                    switch (Model.ProjectionResult) {
-                        case ProjectionResult.String:
-                            @await Component.InvokeAsync(typeof(StringCountApiBarChartViewComponent), new {
-                                summary = new CountSummary<string>(),
-                                filter = new Filter<FloatCriterion>(Model.FloatCriteria.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
+            if (SummaryMethod.FromDescriptor(Model.SummaryMethodDescriptor).RequiresProjection) {
+                @await Component.InvokeAsync(typeof(FloatProjectingApiBarChartViewComponent), new {
+                                summary = numberProjectingSummary,
+                                filter = new Filter<Criterion>(Model.FloatCriteria?.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
+                                timeInterval = new TimeInterval(intervalStart, intervalEnd, null),
+                                projection = new SimpleGroupedProjection<float>(Model.CategoryTokenKey, Model.ValueTokenKey),
+                                drilldownAction = "FloatProjectingApiLineChart",
+                                drilldownController = "Charting"
+                            });
+            } else {
+                @await Component.InvokeAsync(typeof(NonProjectingApiBarChartViewComponent), new {
+                                summary = nonProjectingSummary,
+                                filter = new Filter<Criterion>(Model.FloatCriteria.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
                                 timeInterval = new TimeInterval(intervalStart, intervalEnd, null),
                                 projection = new SimpleGroupedProjection<string>(Model.CategoryTokenKey, Model.ValueTokenKey),
                                 drilldownAction = "StringCountApiLineChart",
                                 drilldownController = "Charting"
-                            })
-                            break;
-                        case ProjectionResult.Number:
-                        default:
-                            @await Component.InvokeAsync(typeof(FloatCountApiBarChartViewComponent), new {
-                                summary = new CountSummary<float>(),
-                                filter = new Filter<FloatCriterion>(Model.FloatCriteria.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList()),
-                                timeInterval = new TimeInterval(intervalStart, intervalEnd, null),
-                                projection = new SimpleGroupedProjection<float>(Model.CategoryTokenKey, Model.ValueTokenKey),
-                                drilldownAction = "FloatProjectingApiLineChart",
-                                drilldownController = "Charting"
-                            })
-                            break;
-                    }
-                    break;
-                case SummaryMethodDescriptor.Average:
-                default:
-                    switch (Model.ProjectionResult) {
-                        case ProjectionResult.Number:
-                            @await Component.InvokeAsync(typeof(FloatAverageApiBarChartViewComponent), new {
-                                summary = new AverageSummary(),
-                                filter = new Filter<FloatCriterion>(Model.FloatCriteria?.Select(fc => new FloatCriterion(fc.Key, fc.Value, fc.Relation)).ToList() ?? new List<FloatCriterion>()),
-                                timeInterval = new TimeInterval(intervalStart, intervalEnd, null),
-                                projection = new SimpleGroupedProjection<float>(Model.CategoryTokenKey, Model.ValueTokenKey),
-                                drilldownAction = "FloatProjectingApiLineChart",
-                                drilldownController = "Charting"
-                            })
-                            break;
-                        default:
-                            throw new Exception("Cannot compute average over non-numerical values");
-                    }
-                    break;
+                            });
             }
         }
     </div>

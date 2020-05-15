@@ -1,15 +1,14 @@
 using Newtonsoft.Json.Linq;
 
 namespace DirectKeyDashboard.Charting.Domain {
-    public class CompositeValueProjection<TProjectionValue, TCompositeProjection> : Projection<TProjectionValue>
-        where TCompositeProjection : CompositeGroupedProjection<TProjectionValue>
+    public class CompositeValueProjection<TProjectionValue> : Projection<TProjectionValue>
     {
-        public TCompositeProjection UnderlyingProjection {get; set;}
+        public CompositeGroupedProjection<TProjectionValue> UnderlyingProjection {get; set;}
         public string SubKey {get; set;}
         
         // For model binding
-        public CompositeValueProjection() : base(typeof(CompositeValueProjection<TProjectionValue, TCompositeProjection>).FullName){}
-        public CompositeValueProjection(TCompositeProjection projection, string subKey) : base(typeof(CompositeValueProjection<TProjectionValue, TCompositeProjection>).FullName) {
+        public CompositeValueProjection() : base(typeof(CompositeValueProjection<TProjectionValue>).FullName){}
+        public CompositeValueProjection(CompositeGroupedProjection<TProjectionValue> projection, string subKey) : base(typeof(CompositeValueProjection<TProjectionValue>).FullName) {
             UnderlyingProjection = projection;
             SubKey = subKey;
         }

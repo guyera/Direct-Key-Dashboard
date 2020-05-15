@@ -17,6 +17,18 @@ namespace DirectKeyDashboard.Charting.Domain {
             Descriptor = SummaryMethodDescriptor.Median,
             RequiresProjection = true
         };
+
+        public static SummaryMethod FromDescriptor(SummaryMethodDescriptor descriptor) {
+            switch(descriptor) {
+                case SummaryMethodDescriptor.Count:
+                    return Count;
+                case SummaryMethodDescriptor.Average:
+                    return Average;
+                case SummaryMethodDescriptor.Median:
+                default:
+                    return Median;
+            }
+        }
     }
     // An enumeration of possible summary methods.
     public enum SummaryMethodDescriptor {

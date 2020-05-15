@@ -9,37 +9,24 @@ using InformationLibraries;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-/* TODO Reduce the generics used and increase polymorphism in its place.
-    e.g. instead of requiring TSummary as a generic type parameter,
-    simply accept Summary<TProjection, float> as an invocation argument. 
-    The only reason to use generics and generic type constraints enforcing
-    inheritance is to allow more flexibility with the type. e.g. IList<Dog>
-    is not substitutable for IList<Animal> (though covariance IS allowed with
-    classes, just not interfaces), or to guarantee that types match in certain
-    locations (e.g. the summary takes as an argument a list of the same type which the
-    projection produces). However, I do not need such flexibility, nor do I need
-    such constraints with summaries, projections, or criteria. The only
-    real case for generics here is TProjection (which should probably
-    be named to TProjectionValue, as it represents the type of the thing
-    which is projected, not the type of the projection itself), for the
-    reason mentioned (summary must be able to summarize the type of thing
-    which was projected)  */
-
 namespace DirectKeyDashboard.Views.Charting
 {
     // Represents a bar chart which projects data from the API.
     // The data is filtered by the Filter model supplied,
     // projected by the GropuedProjection model, and summarized
     // by the Summary model.
-    public class ApiGroupedBarChartViewComponent<TProjection, TSummary, TCriterion, TCompositeProjection> : GroupedBarChartViewComponent
-            where TSummary : Summary<TProjection, float>
-            where TCriterion : Criterion
-            where TCompositeProjection : CompositeGroupedProjection<TProjection> {
+    public class ApiGroupedBarChartViewComponent<TProjection> : GroupedBarChartViewComponent {
         // Inject DKApiAccess with dependency injection so that
         // this view component can access the API
         public ApiGroupedBarChartViewComponent(DKApiAccess apiAccess) : base(apiAccess) {}
 
-        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<TCriterion> filter, TimeInterval timeInterval, TCompositeProjection projection, TSummary summary, string drilldownAction, string drilldownController) {
+        protected virtual async Task<GroupedBarChart> ProjectChart(Filter<Criterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, Summary<TProjection, float> summary, string drilldownAction, string drilldownController) {
+            Console.WriteLine($"Filter count: {filter.Criteria?.Count() ?? 0}");
+            Console.WriteLine($"Time interval: {timeInterval.Start} to {timeInterval.End}");
+            Console.WriteLine($"Projection: {projection}");
+            Console.WriteLine($"Summary: {summary}");
+            Console.WriteLine($"DD Action: {drilldownAction}");
+            Console.WriteLine($"DD Controller: {drilldownController}");
             // For each time interval, add a datum to the dataset
             var rawData = await apiAccess.PullKeyDeviceActivity(timeInterval.Start, timeInterval.End);
             // Parse string to JObject
@@ -128,10 +115,10 @@ namespace DirectKeyDashboard.Views.Charting
                 DrilldownControllers = drilldownControllers,
                 DrilldownQueryParameters = subLabels.Select(subLabel => (object) new {
                     preFilter = filter,
-                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>>(
-                        new List<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>>() {
-                            new ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>>(
-                                new CategoryProjection<IDictionary<string, TProjection>, TCompositeProjection>(projection),
+                    filter = new Filter<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>>>>(
+                        new List<ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>>>>() {
+                            new ProjectionCriterion<string, CategoryProjection<IDictionary<string, TProjection>>>(
+                                new CategoryProjection<IDictionary<string, TProjection>>(projection),
                                 kvp.Key
                             )
                         }
@@ -143,7 +130,7 @@ namespace DirectKeyDashboard.Views.Charting
                             new TimeInterval(DateTime.ParseExact("2019-08-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-08-31", "yyyy-MM-dd", CultureInfo.InvariantCulture), "August"),
                             new TimeInterval(DateTime.ParseExact("2019-09-01", "yyyy-MM-dd", CultureInfo.InvariantCulture), DateTime.ParseExact("2019-09-30", "yyyy-MM-dd", CultureInfo.InvariantCulture), "September")
                     }),
-                    projection = new CompositeValueProjection<TProjection, TCompositeProjection>(projection, subLabel)
+                    projection = new CompositeValueProjection<TProjection>(projection, subLabel)
                 }).ToList()
             }).ToList();
 
@@ -153,7 +140,7 @@ namespace DirectKeyDashboard.Views.Charting
             };
         }
 
-        public virtual async Task<IViewComponentResult> InvokeAsync(TSummary summary, Filter<TCriterion> filter, TimeInterval timeInterval, TCompositeProjection projection, string drilldownAction, string drilldownController, bool pivot = false) {
+        public virtual async Task<IViewComponentResult> InvokeAsync(Summary<TProjection, float> summary, Filter<Criterion> filter, TimeInterval timeInterval, CompositeGroupedProjection<TProjection> projection, string drilldownAction, string drilldownController, bool pivot = false) {
             var barChart = await ProjectChart(filter, timeInterval, projection, summary, drilldownAction, drilldownController);
             return View(pivot ? barChart.Pivot() : barChart);
         }

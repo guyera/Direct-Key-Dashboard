@@ -52,6 +52,8 @@ The main setting relevant for changing is `ApplicationDbContext`, a semicolon-se
 }
 ```
 
+In the file Data/ApplicationDbContext, particularly in the OnConfiguring method, the database context is configured to work with MySQL. If an alternative database management system is preferred, such as SQL Server, the configuration should be modified accordingly.
+
 Lastly, the file InformationLibraries/DKApiClient specifies the API base address as a constant (`const string ApiAddress = "https://dkintapi.keytest.net/api/ver6/";`). For development purposes, it points to the DKInt API (testing API). For production, it should be changed to the correct API endpoint.
 
 ## Project Dependencies ##
